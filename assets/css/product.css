@@ -5,8 +5,22 @@
     justify-self: center;
     justify-self: right;
 }
+/* 
+#msg p{
+    filter: blur(6px);
+}
 
+#user span{
+    filter: blur(6px);
+}
 
+#containall{
+    filter: blur(6px);
+}
+
+#optionpov{
+    filter: blur(6px);
+} */
 
 #reloader{
     margin: 0;

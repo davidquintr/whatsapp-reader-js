@@ -11,6 +11,7 @@ let userColor = [];
 var eng = true;
 var nmode = true;
 var msgChar = 0;
+var lastMsg = 0;
 const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 const months = ["January", "February", "March", "April", "May", "June", "July","August","September","Octuber","November","December"];
 let advertencias = ["Los mensajes y","Cambió tu código","creó el grupo", "añadió a", "cambió el ícono", 
@@ -26,9 +27,8 @@ let warnings = ["Messages and calls are","left","You're no longer","changed to",
 var activeUser = document.getElementById("optionpov");
 
 activeUser.addEventListener("change",function(){
-    var user = usuarios[activeUser.selectedIndex].substring(0,usuarios[activeUser.selectedIndex].length - 1).split(' ').join('');
+    var user = usuarios[activeUser.selectedIndex].split(' ').join('');
     elegirUsr(user);
-
 });
 
 function abrirArchivo(evento){
@@ -45,7 +45,6 @@ function abrirArchivo(evento){
         document.getElementById("containall").remove();
         document.getElementById("containmsg").remove();
         document.getElementById("labArch").remove();
-        document.getElementById("configs").style.display = "block";
 
 
         reader.onload = function(e){
@@ -54,18 +53,31 @@ function abrirArchivo(evento){
             var textFinal = "";
             internationalNumberFormat = new Intl.NumberFormat('es-US')
             document.getElementById("reload").style.display = "flex";
-            msgChar = internationalNumberFormat.format(parseInt(lineas.length));
+            var totallyText = 0;
+            if(lineas.length > 1500){
+                cargarMensajes(lineas.length / 10);
+                totallyText = lineas.length / 10;
+            } 
+            else if(lineas.length > 20000){
+                cargarMensajes(lineas.length / 20);
+                totallyText = lineas.length / 20;
+            }
+            else{
+                cargarMensajes(lineas.length);
+                totallyText = lineas.length;
+            }
+
+            msgChar = internationalNumberFormat.format(parseInt(totallyText));
+
             if(!eng)
                 textFinal = "Se han cargado " + msgChar + " mensajes";
             else
                 textFinal = "Has been loaded " + msgChar + " messages";
 
-            lineas.forEach(function(linea){
-                DividirMensaje(linea);
-            })
+
             document.getElementById("parraf").textContent = textFinal;
-            elegirUsr(usuarios[0].substring(0,usuarios[0].length - 1).split(' ').join(''));
-  
+            elegirUsr(usuarios[0].split(' ').join(''));
+            document.getElementById("configs").style.display = "block";
         };
         reader.readAsText(archivo);
     } else {
@@ -119,16 +131,17 @@ function DividirMensaje(linea){
             }
         }
 
+        usuario = usuario.substring(0,usuario.length - 1);
         cuerpoMensaje = originLin.substring((posiciones+brecha),originLin.length).replace(/ /g,"&nbsp");
 
         if(!usuarios.includes(usuario)){
             usuarios.push(usuario);
             userColor.push("hsl(" + Math.round((Math.random() * 359)) + ", 64%, 64%)");
             listUsers();
-            createUserOption(usuario.substring(0,usuario.length - 1));
+            createUserOption(usuario);
         }
-
         AdicionMensajes(usuario,cuerpoMensaje,hora,linea);
+
     }catch(error){};
 }
 
@@ -144,11 +157,7 @@ function AdicionMensajes(usuario,cuerpoMensaje,hora,linea){
     if(msgAnt == usuario) usrText.style.display = "none";
 
     // Le da su color asignado
-    for(var i = 0 ; i < usuarios.length; i++){
-        if(usuarios[i] == usuario){
-            usrText.style.color = userColor[i];
-        }
-    }
+    usrText.style.color = userColor[usuarios.indexOf(usuario)];
 
     // Crea el párrafo del mensaje
     const msgText = document.createElement("p");
@@ -195,7 +204,7 @@ function AdicionMensajes(usuario,cuerpoMensaje,hora,linea){
     var contain = document.createElement("div");
     contain.id = "containmsg";
 
-    contain.className = "oth " + usuario.substring(0,usuario.length-1).split(' ').join('');
+    contain.className = "oth " + usuario.split(' ').join('');
     contain.style.display = "flex";
     elements.append(usrText,msgText);
     div.append(elements,fechaTexto);
@@ -239,7 +248,7 @@ function listUsers(){
     userIcon.id = "imagen";
 
     const username = document.createElement("span");
-    username.textContent = usuarios[usuarios.length - 1].substring(0,usuarios[usuarios.length - 1].length-1);
+    username.textContent = usuarios[usuarios.length - 1];
 
     userDiv.appendChild(userIcon);
     userDiv.appendChild(username);
@@ -324,3 +333,12 @@ function elegirUsr(username){
     })
 
 }   
+
+function cargarMensajes(totally){
+
+    for(var i = lastMsg ; i < totally ; i++){
+        DividirMensaje(lineas[i]);
+    }
+    lastMsg = totally;
+
+}

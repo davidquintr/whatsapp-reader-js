@@ -77,12 +77,24 @@ function abrirArchivo(evento){
 }
 
 function DividirMensaje(linea){
+
+    if(linea.substring(0,24).includes(",")){
+        linea = linea.substring(0,24).replace(",","") + linea.substring(24,linea.length)
+    }
+    if(linea.slice(-1) == "."){
+        console.log(true)
+        linea.slice(0, length - 1)
+    }
+
+    console.log(linea)
+
     let brecha =  0;
     let originLin = linea;
     linea = linea.split(' ');
     let usuario = linea[4];
     let cuerpoMensaje = "";
     let fecha = linea[0];
+
     let hora = linea[1] + " " + linea[2];
     var posiciones = 0;
     var validRegex = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;

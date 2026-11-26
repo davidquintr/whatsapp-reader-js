@@ -1,0 +1,94 @@
+/* ---------- Top bar ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px;
+  background: var(--topbar);
+  color: #fff;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.3);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-family: var(--font-brand);
+  font-weight: 500;
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+.brand img {
+  width: 40px;
+  height: 40px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--toolbar-track);
+}
+
+.segmented button {
+  min-width: 44px;
+  height: 32px;
+  padding: 0 10px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.7;
+  transition:
+    background-color 0.15s,
+    opacity 0.15s;
+}
+
+.segmented button:hover {
+  opacity: 1;
+}
+
+.segmented button[aria-pressed="true"] {
+  background: var(--toolbar-active);
+  color: var(--toolbar-active-text);
+  opacity: 1;
+}
+
+.segmented svg {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-button {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--reset-bg);
+  color: #fff;
+  transition: transform 0.4s;
+}
+
+.icon-button:hover {
+  transform: rotate(-90deg);
+}

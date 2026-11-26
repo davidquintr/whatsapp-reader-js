@@ -75,7 +75,7 @@ export function renderEntries(container, chat, ctx) {
     if (!section || (entry.date && key !== currentDay)) {
       section = el("section", "day");
       if (entry.date) {
-        const label = el("h3", "day-label");
+        const label = el("h2", "day-label");
         label.append(el("span", null, dayFmt.format(entry.date)));
         section.append(label);
         registry.days.push({ date: entry.date, el: section });

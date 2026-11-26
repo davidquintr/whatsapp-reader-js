@@ -47,7 +47,7 @@ npm test       # all tests (Node 18+); fails if the pages are stale, so run the 
 
 The generated pages are committed, so hosting needs no build step. The script is deliberately not called `build`: Vercel would run it and then look for a `public/` output folder.
 
-Each language has its own indexable URL: `/` (Spanish) and `/en/` (English). `index.html` is both the template and the Spanish page. Edit the text in `assets/js/i18n.js`, not in the HTML, then run `npm run build:pages`.
+Each language has its own indexable URL: `/` (Spanish) and `/en/` (English). `index.html` is both the template and the Spanish page. Edit the text in `assets/js/i18n.js`, not in the HTML, then run `npm run build:pages`. The same command rebuilds `assets/css/styles.css` from `assets/css/src/`; `npm run watch` reruns it on every save.
 
 | File | Role |
 | --- | --- |
@@ -56,6 +56,7 @@ Each language has its own indexable URL: `/` (Spanish) and `/en/` (English). `in
 | `assets/js/app.js` | Wiring: loading, views, search, comparison |
 | `assets/js/render.js`, `statsview.js`, `exporter.js` | DOM rendering |
 | `assets/js/i18n.js` | Spanish and English strings |
+| `assets/css/src/*.css` | One stylesheet per component (`tokens`, `chat`, `media`, `stats`…). `npm run build:pages` joins them, in the `CSS_FILES` order of `scripts/build-pages.mjs`, into `assets/css/styles.css`, the only file the page loads |
 | `scripts/build-pages.mjs` | Generates the per-language pages, meta tags, JSON-LD and the sitemap |
 | `sw.js`, `manifest.webmanifest` | Offline cache and Android share target. Bump `VERSION` in `sw.js` when shell files change |
 | `packages/whatsapp-chat-parser` | npm package for the parser (`npm pack` copies the sources in) |

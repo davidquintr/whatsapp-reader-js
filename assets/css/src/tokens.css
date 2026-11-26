@@ -1,0 +1,68 @@
+/* ---------- Tokens ---------- */
+:root {
+  --radius: 12px;
+  --font: "Roboto", "Roboto Fallback", system-ui, sans-serif;
+  --font-brand: "Rubik", var(--font);
+  --header-h: 64px;
+
+  color-scheme: dark;
+  --bg: #111b21;
+  --surface: #0b141a;
+  --topbar: #202c33;
+  --toolbar-track: #0b141a;
+  --toolbar-active: #2a3942;
+  --toolbar-active-text: #ffffff;
+  --text: #e9edef;
+  --text-muted: #8696a0;
+  /* Time and muted text inside your own (green) bubbles. */
+  --meta-out: #bfcdca;
+  --accent: #b4ffae;
+  --accent-strong: #00a884;
+  --on-accent: #0b141a;
+  --reset-bg: #00a884;
+  --series-1: #338ced;
+  --heat-hi: #6aabf1;
+  --mark: rgb(255 214 0 / 0.45);
+  --mark-current: #ffb300;
+  --pill-bg: rgb(11 20 26 / 0.6);
+  --pill-text: #e9edef;
+  --bubble-in: #202c33;
+  --bubble-out: #005c4b;
+  --notice: #182229;
+  --day: #182229;
+  --error: #ff8a80;
+  --author-l: 68%;
+  --chat-bg: url("../images/background.webp");
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --topbar: #008069;
+  --toolbar-track: #005a4b;
+  --toolbar-active: #ffffff;
+  --toolbar-active-text: #008069;
+  --text: #111b21;
+  --text-muted: #54656f;
+  --meta-out: #54656f;
+  --accent: #008069;
+  --accent-strong: #008069;
+  --on-accent: #ffffff;
+  --reset-bg: rgb(255 255 255 / 0.2);
+  --series-1: #257de0;
+  --heat-hi: #1757ac;
+  --mark: rgb(255 214 0 / 0.55);
+  --mark-current: #ff9800;
+  --pill-bg: rgb(255 255 255 / 0.85);
+  --pill-text: #54656f;
+  --bubble-in: #ffffff;
+  --bubble-out: #d9fdd3;
+  --notice: #fff5c4;
+  --day: #ffffff;
+  --error: #c62828;
+  --author-l: 36%;
+  --chat-bg: url("../images/backgroundlight.webp");
+  --shadow: 0 1px 2px rgb(11 20 26 / 0.15);
+}

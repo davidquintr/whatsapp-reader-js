@@ -1,0 +1,13 @@
+/* ---------- Exported HTML ---------- */
+.export-title {
+  margin: 24px 0 12px;
+  text-align: center;
+  font-size: 1.3rem;
+  overflow-wrap: anywhere;
+}
+
+.export-foot {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}

@@ -5,6 +5,7 @@
   "scripts": {
     "build:pages": "node scripts/build-pages.mjs",
     "test": "node --test tests/",
-    "start": "python3 -m http.server 8080"
+    "start": "python3 -m http.server 8080",
+    "watch": "node --watch-path=assets/css/src --watch-path=assets/js/i18n.js scripts/build-pages.mjs"
   }
 }

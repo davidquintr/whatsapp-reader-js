@@ -1,0 +1,60 @@
+/* ---------- Views, tabs & actions ---------- */
+.views {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.tabs button {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.tabs button[aria-selected="true"] {
+  background: var(--accent-strong);
+  color: #fff;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.action {
+  padding: 8px 14px;
+  border: 1px solid color-mix(in oklab, var(--text-muted) 40%, transparent);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.action:hover {
+  border-color: var(--accent-strong);
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: underline;
+}

@@ -1,0 +1,302 @@
+/* ---------- Statistics ---------- */
+.stats {
+  display: grid;
+  gap: 16px;
+}
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.stat-tile,
+.stat-panel {
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.stat-tile {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+}
+
+.stat-label,
+.stat-sub,
+.stat-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+
+.stat-hint {
+  margin: -8px 0 12px;
+}
+
+.stat-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Horizontal bars: one hue, 4px rounded data end, recessive track. */
+.hbars {
+  display: grid;
+  gap: 8px;
+}
+
+.hbar {
+  display: grid;
+  grid-template-columns: minmax(80px, 28%) 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+}
+
+.hbar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hbar-track {
+  height: 14px;
+}
+
+.hbar-fill {
+  display: block;
+  height: 100%;
+  width: max(2px, calc(var(--v) * 100%));
+  border-radius: 0 4px 4px 0;
+  background: var(--series-1);
+}
+
+.hbar-value,
+.rank-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Columns: one hue, 2px gaps, 4px rounded tops anchored to the baseline. */
+.columns {
+  position: relative;
+  padding-top: 18px;
+}
+
+.axis-max {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.columns-plot {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 180px;
+  border-top: 1px dashed color-mix(in oklab, var(--text-muted) 30%, transparent);
+  border-bottom: 1px solid
+    color-mix(in oklab, var(--text-muted) 50%, transparent);
+}
+
+.column {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 64px;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.column-bar {
+  display: block;
+  width: 100%;
+  height: calc(var(--v) * 100%);
+  min-height: 1px;
+  border-radius: 4px 4px 0 0;
+  background: var(--series-1);
+}
+
+.column:hover .column-bar {
+  filter: brightness(1.15);
+}
+
+.column-label {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.columns + .table-view {
+  margin-top: 28px;
+}
+
+/* Heatmap: sequential, one hue from the surface to --heat-hi. */
+.heatmap {
+  display: grid;
+  grid-template-columns: auto repeat(24, minmax(0, 1fr));
+  gap: 2px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.heat-day {
+  padding-right: 6px;
+  align-self: center;
+  text-transform: capitalize;
+}
+
+.heat-hour {
+  text-align: left;
+}
+
+.heat-cell {
+  aspect-ratio: 1;
+  min-height: 10px;
+  border-radius: 3px;
+  background: color-mix(
+    in oklab,
+    var(--heat-hi) calc(var(--v) * 100%),
+    var(--bg)
+  );
+}
+
+.heat-cell:hover {
+  outline: 2px solid var(--text);
+}
+
+.heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.heat-scale {
+  width: 120px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--bg), var(--heat-hi));
+}
+
+.stat-table,
+.table-view table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-table th,
+.stat-table td,
+.table-view th,
+.table-view td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid
+    color-mix(in oklab, var(--text-muted) 20%, transparent);
+}
+
+.stat-table thead th,
+.table-view thead th {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.table-view {
+  margin-top: 12px;
+  font-size: 0.8rem;
+}
+
+.table-view summary {
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.table-view > table {
+  display: block;
+  overflow-x: auto;
+}
+
+.rank-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rank-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  font-size: 0.875rem;
+}
+
+.rank-bar {
+  grid-column: 1 / -1;
+  height: 6px;
+  width: max(2px, calc(var(--v) * 100%));
+  border-radius: 0 4px 4px 0;
+  background: var(--series-1);
+}
+
+.emoji-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.emoji-list li {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  max-width: 260px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.8rem;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
+}

@@ -273,6 +273,7 @@ function render() {
   els.views.hidden = !loaded;
   els.searchbar.hidden = !loaded;
   els.dropzone.classList.toggle("is-compact", loaded);
+  els.chat.classList.toggle("is-preview", !loaded);
 
   const nf = new Intl.NumberFormat(state.lang);
   const count = chat.entries.filter((e) => e.type === "message").length;
@@ -325,7 +326,7 @@ function renderAuthorStyles(authors, selfIndex) {
   const rules = authors.map((name, i) => `[data-a="${i}"]{--hue:${hueFor(name)}}`);
   rules.push(
     `.row[data-a="${selfIndex}"]{justify-content:flex-end}`,
-    `.row[data-a="${selfIndex}"] .bubble{background:var(--bubble-out)}`,
+    `.row[data-a="${selfIndex}"] .bubble{background:var(--bubble-out);--meta:var(--meta-out)}`,
     `.row.first[data-a="${selfIndex}"] .bubble{border-start-end-radius:2px;border-start-start-radius:var(--radius)}`,
     `.row[data-a="${selfIndex}"] .author{display:none}`,
   );

@@ -1,0 +1,49 @@
+/* ---------- Print / PDF ---------- */
+@media print {
+  .topbar,
+  .hero,
+  .loader,
+  .participants,
+  .views,
+  .searchbar,
+  .compare,
+  .info,
+  .footer,
+  .tooltip,
+  .table-view {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  main {
+    max-width: none;
+    padding: 0;
+  }
+
+  .chat {
+    background-image: none;
+    padding: 0;
+  }
+
+  .day {
+    content-visibility: visible;
+  }
+
+  .day-label {
+    position: static;
+  }
+
+  .row,
+  .stat-panel,
+  .stat-tile {
+    break-inside: avoid;
+  }
+
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

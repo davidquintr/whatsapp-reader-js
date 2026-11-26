@@ -1,0 +1,57 @@
+/* ---------- Participants ---------- */
+.participants {
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.participants h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.participants .hint {
+  margin: 4px 0 12px;
+}
+
+.users {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 4px 14px 4px 4px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--bg);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+
+.user-chip[aria-pressed="true"] {
+  border-color: var(--accent-strong);
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: hsl(var(--hue, 160) 55% 45%);
+  color: #fff;
+  font-size: 0.85rem;
+}

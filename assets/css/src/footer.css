@@ -1,0 +1,54 @@
+/* ---------- Footer ---------- */
+.footer {
+  background: var(--topbar);
+  color: #fff;
+}
+
+.footer-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.footer-item {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.footer-item img,
+.github-link {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
+}
+
+.github-link {
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.github-link svg {
+  width: 48px;
+  height: 48px;
+}
+
+.footer-item a:hover img,
+.github-link:hover {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+.footer-note {
+  margin: 0;
+}

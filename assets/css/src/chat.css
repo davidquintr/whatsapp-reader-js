@@ -1,0 +1,133 @@
+/* ---------- Chat ---------- */
+.summary {
+  margin: 0 0 8px;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  /* Filled in by script: keep its line so the chat below does not jump. */
+  min-height: 1lh;
+}
+
+.chat {
+  padding: 8px 4% 16px;
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  background-image: var(--chat-bg);
+  background-size: 480px;
+}
+
+/* The sample chat is drawn by script after the page shows: reserve its height
+   (tallest case, English at the narrowest width) so the page below it never jumps. */
+.chat.is-preview {
+  min-height: 270px;
+}
+
+@media (max-width: 640px) {
+  .chat.is-preview {
+    min-height: 315px;
+  }
+}
+
+.day {
+  /* Lets the browser skip layout of off-screen days in long chats. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+.day-label {
+  position: sticky;
+  top: calc(var(--header-h) + 8px);
+  z-index: 5;
+  margin: 12px 0;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.day-label span {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--day);
+  color: var(--text-muted);
+  box-shadow: var(--shadow);
+}
+
+.row {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 2px;
+}
+
+.row.first {
+  margin-top: 10px;
+}
+
+.row.system {
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.notice {
+  max-width: min(90%, 560px);
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--notice);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  white-space: pre-wrap;
+  box-shadow: var(--shadow);
+}
+
+.bubble {
+  position: relative;
+  max-width: min(75%, 560px);
+  padding: 6px 9px 8px;
+  border-radius: var(--radius);
+  background: var(--bubble-in);
+  box-shadow: var(--shadow);
+}
+
+.row.first .bubble {
+  border-start-start-radius: 2px;
+}
+
+.author {
+  margin: 0 0 2px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: hsl(var(--hue, 160) 70% var(--author-l));
+}
+
+.text {
+  display: inline;
+  margin: 0;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.text a {
+  color: #53bdeb;
+}
+
+:root[data-theme="light"] .text a {
+  color: #027eb5;
+}
+
+.muted .text {
+  font-style: italic;
+  color: var(--meta, var(--text-muted));
+}
+
+.meta {
+  float: right;
+  margin: 6px 0 -4px 12px;
+  font-size: 0.7rem;
+  /* --meta is set on your own bubbles, where the plain muted gray is too faint. */
+  color: var(--meta, var(--text-muted));
+  white-space: nowrap;
+}

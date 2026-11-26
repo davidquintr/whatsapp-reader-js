@@ -1,8 +1,7 @@
 // Service worker: offline app shell + Android "Share to WhatsApp Reader" target.
 // Bump VERSION whenever the shell files change so clients pick up the update.
-const VERSION = "v3.1.1";
+const VERSION = "v3.2.0";
 const SHELL_CACHE = `wa-reader-${VERSION}`;
-const RUNTIME_CACHE = "wa-reader-runtime";
 const SHARE_CACHE = "wa-share";
 
 const SHELL = [
@@ -22,7 +21,12 @@ const SHELL = [
   "assets/js/diff.js",
   "assets/js/zip.js",
   "assets/js/exporter.js",
+  "assets/fonts/roboto-latin.woff2",
+  "assets/fonts/roboto-latin-ext.woff2",
+  "assets/fonts/rubik-500-brand.woff2",
   "assets/images/iconreader.png",
+  "assets/images/iconreader-120.webp",
+  "assets/images/avatar.webp",
   "assets/images/icon-192.png",
   "assets/images/icon-512.png",
   "assets/images/background.webp",
@@ -45,7 +49,8 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((k) => k.startsWith("wa-reader-v") && k !== SHELL_CACHE)
+            // Old shell versions, plus the Google Fonts cache from before fonts were self-hosted.
+            .filter((k) => k.startsWith("wa-reader-") && k !== SHELL_CACHE)
             .map((k) => caches.delete(k)),
         ),
       )
@@ -64,19 +69,16 @@ self.addEventListener("fetch", (event) => {
   }
   if (request.method !== "GET") return;
 
-  // Same-origin: stale-while-revalidate, so it works offline and updates in the background.
-  // Google Fonts: same strategy in a runtime cache.
-  const sameOrigin = url.origin === self.location.origin;
-  const fonts = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
-  if (!sameOrigin && !fonts) return;
+  // Same-origin only: stale-while-revalidate, so it works offline and updates in the background.
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(request, { ignoreSearch: sameOrigin && request.mode === "navigate" }).then((cached) => {
+    caches.match(request, { ignoreSearch: request.mode === "navigate" }).then((cached) => {
       const network = fetch(request)
         .then((response) => {
-          if (response.ok || response.type === "opaque") {
+          if (response.ok) {
             const copy = response.clone();
-            caches.open(sameOrigin ? SHELL_CACHE : RUNTIME_CACHE).then((c) => c.put(request, copy));
+            caches.open(SHELL_CACHE).then((c) => c.put(request, copy));
           }
           return response;
         })

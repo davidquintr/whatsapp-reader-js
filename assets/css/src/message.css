@@ -1,0 +1,27 @@
+/* ---------- Message content ---------- */
+.text strong {
+  font-weight: 700;
+}
+
+.text code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.85em;
+}
+
+.text .code-block {
+  display: block;
+  margin: 4px 0;
+  padding: 6px 8px;
+  white-space: pre-wrap;
+}
+
+.attachment {
+  margin: 2px 0 4px;
+}
+
+.attachment.is-pending:not(.media-frame):not(.sticker-frame) {
+  opacity: 0.6;
+}

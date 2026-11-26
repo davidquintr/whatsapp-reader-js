@@ -1,0 +1,67 @@
+/* ---------- Small screens ---------- */
+@media (max-width: 640px) {
+  :root {
+    --header-h: 56px;
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .segmented button {
+    min-width: 40px;
+    padding: 0 8px;
+  }
+
+  .chat {
+    padding-inline: 8px;
+  }
+
+  .bubble {
+    max-width: 88%;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-note {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .views {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tabs button {
+    flex: 1;
+  }
+
+  .actions {
+    justify-content: center;
+  }
+
+  .searchbar {
+    top: calc(var(--header-h) + 4px);
+  }
+
+  #chat-view:has(.searchbar:not([hidden])) .day-label {
+    top: calc(var(--header-h) + 112px);
+  }
+
+  .hbar {
+    grid-template-columns: minmax(60px, 34%) 1fr auto;
+  }
+
+  .bubble.has-media {
+    max-width: 88%;
+  }
+
+  .sticker-frame {
+    width: 150px;
+  }
+}

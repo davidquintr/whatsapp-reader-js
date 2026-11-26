@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { buildPages, buildSitemap, buildRobots, PAGES, SITE } from "../scripts/build-pages.mjs";
+import { readFileSync, readdirSync } from "node:fs";
+import { buildPages, buildSitemap, buildRobots, buildCss, CSS_FILES, PAGES, SITE } from "../scripts/build-pages.mjs";
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 const template = read("index.html");
@@ -69,4 +69,10 @@ test("English page resolves assets from the site root", () => {
   const en = built["en/index.html"];
   assert.ok(en.includes('<base href="../" />'));
   assert.ok(!built["index.html"].includes("<base "));
+});
+
+test("assets/css/styles.css is built from every file in assets/css/src (run `npm run build:pages`)", () => {
+  const sources = readdirSync(new URL("../assets/css/src/", import.meta.url)).filter((f) => f.endsWith(".css"));
+  assert.deepEqual([...CSS_FILES].map((n) => `${n}.css`).sort(), sources.sort(), "CSS_FILES must list every file in assets/css/src");
+  assert.equal(read("assets/css/styles.css"), buildCss(read), "assets/css/styles.css is stale: run npm run build:pages");
 });

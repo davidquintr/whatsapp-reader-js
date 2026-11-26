@@ -1,0 +1,149 @@
+// Bakes the translated text into the static HTML so search engines (and link
+// previews) see real content without running JavaScript.
+//
+//   index.html     Spanish, at the site root (also the template)
+//   en/index.html  English, generated
+//
+// Run `npm run build` after editing assets/js/i18n.js or index.html.
+// tests/pages.test.js fails if the committed pages are out of date.
+
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
+import { STRINGS } from "../assets/js/i18n.js";
+
+export const SITE = "https://whatsapp-reader-js.vercel.app/";
+
+export const PAGES = {
+  es: { path: "index.html", url: SITE, locale: "es_ES", alternate: "en_US", base: null },
+  en: { path: "en/index.html", url: `${SITE}en/`, locale: "en_US", alternate: "es_ES", base: "../" },
+};
+
+const escapeText = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const escapeAttr = (s) => escapeText(s).replace(/"/g, "&quot;");
+
+/** Sets (or adds) an attribute on an opening tag string. */
+function setAttr(tag, name, value) {
+  const re = new RegExp(`(\\s${name}=")[^"]*(")`);
+  if (re.test(tag)) return tag.replace(re, `$1${escapeAttr(value)}$2`);
+  return tag.replace(/\s*(\/?)>$/, ` ${name}="${escapeAttr(value)}" $1>`).replace(/ >$/, ">");
+}
+
+function jsonLd(lang, page) {
+  const s = STRINGS[lang];
+  const faqs = [1, 2, 3, 4, 5].map((n) => ({
+    "@type": "Question",
+    name: s[`faq${n}q`],
+    acceptedAnswer: { "@type": "Answer", text: s[`faq${n}a`] },
+  }));
+  const data = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: "WhatsApp Reader",
+      url: page.url,
+      description: s.pageDescription,
+      inLanguage: lang,
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Any",
+      browserRequirements: "Requires JavaScript",
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      featureList: [1, 2, 3, 4, 5, 6].map((n) => s[`feature${n}`]),
+      image: `${SITE}assets/images/og-${lang}.png`,
+      author: { "@type": "Person", name: "DavidQuint", url: "https://github.com/davidquintr" },
+    },
+    { "@context": "https://schema.org", "@type": "FAQPage", inLanguage: lang, mainEntity: faqs },
+  ];
+  // "<" is escaped so the JSON can never close the <script> element.
+  const json = JSON.stringify(data, null, 2).replace(/</g, "\\u003c");
+  return `<!-- seo:jsonld --><script type="application/ld+json">\n${json}\n</script><!-- /seo:jsonld -->`;
+}
+
+export function buildPage(template, lang) {
+  const s = STRINGS[lang];
+  const page = PAGES[lang];
+  let html = template;
+
+  // <html lang="…">
+  html = html.replace(/<html\b[^>]*>/, (tag) => setAttr(tag, "lang", lang));
+
+  // <base> only on sub-pages, so every relative URL still points at the root.
+  html = html.replace(/\s*<base href="[^"]*"\s*\/?>/, "");
+  if (page.base) html = html.replace(/(<meta charset="[^"]*"\s*\/?>)/i, `$1\n    <base href="${page.base}" />`);
+
+  // Text content: <tag data-i18n="key">…</tag> (no nested tags of the same kind).
+  html = html.replace(/<([a-zA-Z][\w-]*)(\s[^>]*?\bdata-i18n="([\w]+)"[^>]*)>([\s\S]*?)<\/\1>/g, (all, tag, attrs, key) => {
+    if (!(key in s)) throw new Error(`Missing ${lang} string "${key}"`);
+    return `<${tag}${attrs}>${escapeText(s[key])}</${tag}>`;
+  });
+
+  // Attributes driven by data-i18n-label / -placeholder / -content.
+  html = html.replace(/<[a-zA-Z][^>]*\bdata-i18n-(label|placeholder|content)="([\w]+)"[^>]*>/g, (tag, kind, key) => {
+    if (!(key in s)) throw new Error(`Missing ${lang} string "${key}"`);
+    if (kind === "label") return setAttr(setAttr(tag, "aria-label", s[key]), "title", s[key]);
+    if (kind === "placeholder") return setAttr(tag, "placeholder", s[key]);
+    return setAttr(tag, "content", s[key]);
+  });
+
+  // Page-specific values.
+  const seo = {
+    canonical: ["href", page.url],
+    url: ["content", page.url],
+    locale: ["content", page.locale],
+    "locale-alternate": ["content", page.alternate],
+    image: ["content", `${SITE}assets/images/og-${lang}.png`],
+    "alt-es": ["href", PAGES.es.url],
+    "alt-en": ["href", PAGES.en.url],
+    "alt-default": ["href", PAGES.es.url],
+  };
+  html = html.replace(/<[a-zA-Z][^>]*\bdata-seo="([\w-]+)"[^>]*>/g, (tag, key) => {
+    if (!seo[key]) throw new Error(`Unknown data-seo "${key}"`);
+    return setAttr(tag, ...seo[key]);
+  });
+
+  // Language buttons start pressed on the page's language.
+  html = html.replace(/<button\b[^>]*\bdata-lang-value="(\w+)"[^>]*>/g, (tag, value) =>
+    setAttr(tag, "aria-pressed", String(value === lang)),
+  );
+
+  html = html.replace(/<!-- seo:jsonld -->[\s\S]*?<!-- \/seo:jsonld -->/, jsonLd(lang, page));
+  return html;
+}
+
+export function buildPages(template) {
+  return Object.fromEntries(Object.keys(PAGES).map((lang) => [PAGES[lang].path, buildPage(template, lang)]));
+}
+
+export function buildSitemap() {
+  const alternates = Object.entries(PAGES)
+    .map(([lang, p]) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${p.url}"/>`)
+    .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE}"/>`)
+    .join("\n");
+  const urls = Object.values(PAGES)
+    .map((p) => `  <url>\n    <loc>${p.url}</loc>\n${alternates}\n  </url>`)
+    .join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls}
+</urlset>
+`;
+}
+
+export function buildRobots() {
+  return `User-agent: *\nAllow: /\n\nSitemap: ${SITE}sitemap.xml\n`;
+}
+
+// CLI
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const template = readFileSync(join(root, "index.html"), "utf8");
+  for (const [path, html] of Object.entries(buildPages(template))) {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), html);
+    console.log("wrote", path);
+  }
+  writeFileSync(join(root, "sitemap.xml"), buildSitemap());
+  writeFileSync(join(root, "robots.txt"), buildRobots());
+  console.log("wrote sitemap.xml, robots.txt");
+}

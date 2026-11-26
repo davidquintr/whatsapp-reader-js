@@ -1,6 +1,6 @@
 // Service worker: offline app shell + Android "Share to WhatsApp Reader" target.
 // Bump VERSION whenever the shell files change so clients pick up the update.
-const VERSION = "v3.0.0";
+const VERSION = "v3.1.0";
 const SHELL_CACHE = `wa-reader-${VERSION}`;
 const RUNTIME_CACHE = "wa-reader-runtime";
 const SHARE_CACHE = "wa-share";
@@ -8,6 +8,7 @@ const SHARE_CACHE = "wa-share";
 const SHELL = [
   "./",
   "index.html",
+  "en/",
   "manifest.webmanifest",
   "assets/css/styles.css",
   "assets/js/app.js",
@@ -24,8 +25,8 @@ const SHELL = [
   "assets/images/iconreader.png",
   "assets/images/icon-192.png",
   "assets/images/icon-512.png",
-  "assets/images/background.png",
-  "assets/images/backgroundlight.png",
+  "assets/images/background.webp",
+  "assets/images/backgroundlight.webp",
 ];
 
 self.addEventListener("install", (event) => {

@@ -34,15 +34,18 @@ The format is detected from the file itself, whatever the interface language is.
 It handles multi-line messages, system notices, media placeholders, and edited and deleted messages.
 
 ## Preview
-Live at [davidquintr.github.io/whatsapp-reader-js](https://davidquintr.github.io/whatsapp-reader-js/).
+Live at [whatsapp-reader-js.vercel.app](https://whatsapp-reader-js.vercel.app/).
 
 ## Development
 It is a static site with no build step and no dependencies.
 
 ```sh
-npm start   # serves the site at http://localhost:8080 (ES modules need a server)
-npm test    # parser tests (Node 18+)
+npm start      # serves the site at http://localhost:8080 (ES modules need a server)
+npm run build  # bakes the strings from i18n.js into index.html and en/index.html, writes sitemap.xml
+npm test       # all tests (Node 18+); fails if the pages are stale, so run the build first
 ```
+
+Each language has its own indexable URL: `/` (Spanish) and `/en/` (English). `index.html` is both the template and the Spanish page. Edit the text in `assets/js/i18n.js`, not in the HTML, then run `npm run build`.
 
 | File | Role |
 | --- | --- |
@@ -51,6 +54,7 @@ npm test    # parser tests (Node 18+)
 | `assets/js/app.js` | Wiring: loading, views, search, comparison |
 | `assets/js/render.js`, `statsview.js`, `exporter.js` | DOM rendering |
 | `assets/js/i18n.js` | Spanish and English strings |
+| `scripts/build-pages.mjs` | Generates the per-language pages, meta tags, JSON-LD and the sitemap |
 | `sw.js`, `manifest.webmanifest` | Offline cache and Android share target. Bump `VERSION` in `sw.js` when shell files change |
 | `packages/whatsapp-chat-parser` | npm package for the parser (`npm pack` copies the sources in) |
 
@@ -61,6 +65,11 @@ npm test    # parser tests (Node 18+)
 </div>
 
 ## Changelog
+
+### v3.1.0
+- SEO: one URL per language with hreflang, crawlable static text, canonical URLs, Open Graph share images, JSON-LD (WebApplication + FAQ) and a sitemap.
+- New "how to export", features and FAQ section.
+- Chat backgrounds converted to WebP (810 KB → 114 KB).
 
 ### v3.0.0
 - `.zip` exports with media, statistics, search and jump to date, WhatsApp formatting, and cards for polls, locations and contacts.

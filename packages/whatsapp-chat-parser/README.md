@@ -1,7 +1,7 @@
 # @davidquintr/whatsapp-chat-parser
 
 Parse WhatsApp chat exports (`.txt`) with zero dependencies. It runs in browsers and in Node 18+.
-This is the parser behind [WhatsApp Reader](https://davidquintr.github.io/whatsapp-reader-js/).
+This is the parser behind [WhatsApp Reader](https://whatsapp-reader-js.vercel.app/).
 
 ```js
 import { parseChat } from "@davidquintr/whatsapp-chat-parser";

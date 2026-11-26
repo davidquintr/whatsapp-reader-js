@@ -11,6 +11,19 @@ import { tokenize, renderTokens } from "./format.js";
 
 const $ = (id) => document.getElementById(id);
 
+// Switching language moves the address bar between "/" and "/en/". Pin relative
+// URLs (assets, sw.js, the export's stylesheet) to the site root first, as an
+// absolute URL, so they keep resolving the same way after the move.
+(() => {
+  const siteRoot = new URL("./", document.baseURI).href;
+  let base = document.querySelector("base");
+  if (!base) {
+    base = document.createElement("base");
+    document.head.prepend(base);
+  }
+  base.href = siteRoot;
+})();
+
 const els = {
   fileInput: $("file-input"),
   dropzone: $("dropzone"),
@@ -90,10 +103,22 @@ function writePref(key, value) {
   }
 }
 
+// Each language has its own URL ("/" Spanish, "/en/" English) so search engines
+// can index both. The page's language is the default; an explicit choice wins.
 function pickLanguage() {
   const saved = readPref("wa-lang");
   if (LANGS.includes(saved)) return saved;
-  return (navigator.language || "").toLowerCase().startsWith("es") ? "es" : "en";
+  const pageLang = document.documentElement.lang;
+  return LANGS.includes(pageLang) ? pageLang : "es";
+}
+
+/** Keeps the address bar on the URL of the language being shown. */
+function syncLanguageUrl(lang) {
+  const root = new URL("./", document.baseURI); // /en/ pages use <base href="../">
+  const target = new URL(lang === "en" ? "en/" : "./", root);
+  if (target.pathname !== location.pathname) {
+    history.replaceState(history.state, "", target.pathname + location.search + location.hash);
+  }
 }
 
 function setTheme(theme) {
@@ -105,9 +130,9 @@ function setTheme(theme) {
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "light" ? "#008069" : "#202c33");
 }
 
-function setLanguage(lang) {
+function setLanguage(lang, { remember = true } = {}) {
   state.lang = lang;
-  writePref("wa-lang", lang);
+  if (remember) writePref("wa-lang", lang);
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-lang-value]").forEach((btn) => {
     btn.setAttribute("aria-pressed", String(btn.dataset.langValue === lang));
@@ -123,6 +148,10 @@ function setLanguage(lang) {
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
     el.placeholder = t(lang, el.dataset.i18nPlaceholder);
   });
+  document.querySelectorAll("[data-i18n-content]").forEach((el) => {
+    el.setAttribute("content", t(lang, el.dataset.i18nContent));
+  });
+  syncLanguageUrl(lang);
   render();
 }
 
@@ -587,5 +616,5 @@ if ("serviceWorker" in navigator && window.isSecureContext) {
 // ---------- Init ----------
 
 setTheme(document.documentElement.dataset.theme || "dark");
-setLanguage(state.lang);
+setLanguage(state.lang, { remember: false });
 loadSharedFile();

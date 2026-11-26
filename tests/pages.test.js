@@ -42,7 +42,7 @@ for (const [lang, page] of Object.entries(PAGES)) {
     const [app, faq] = JSON.parse(json);
     assert.equal(app["@type"], "WebApplication");
     assert.equal(app.url, page.url);
-    const visible = [...html.matchAll(/<summary data-i18n="faq\dq">([^<]*)<\/summary>/g)].map((m) => m[1]);
+    const visible = [...html.matchAll(/data-i18n="faq\dq">([^<]*)</g)].map((m) => m[1]);
     // Visible text is HTML-escaped; the JSON is not.
     const unescape = (s) => s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     assert.deepEqual(faq.mainEntity.map((q) => q.name), visible.map(unescape));

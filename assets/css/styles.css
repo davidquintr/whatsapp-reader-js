@@ -457,62 +457,224 @@ svg {
 
 /* ---------- Info: how to export, features, FAQ ---------- */
 .info {
+  --line: color-mix(in oklab, var(--text-muted) 22%, transparent);
+  --tint: color-mix(in oklab, var(--accent-strong) 15%, transparent);
   display: grid;
-  gap: 16px;
-  margin-top: 32px;
+  gap: 20px;
+  margin-top: 48px;
 }
 
-.info section {
-  padding: 20px;
-  border-radius: var(--radius);
+.info-block {
+  padding: 28px;
+  border-radius: 16px;
   background: var(--surface);
 }
 
+.info-head {
+  margin-bottom: 20px;
+}
+
+.info-eyebrow {
+  margin: 0 0 4px;
+  color: var(--accent-strong);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .info h2 {
-  margin: 0 0 12px;
-  font-size: 1.2rem;
-}
-
-.info p,
-.info li {
-  color: var(--text-muted);
-}
-
-.info-steps,
-.info-features {
-  display: grid;
-  gap: 8px;
   margin: 0;
-  padding-left: 1.4em;
+  font-size: clamp(1.25rem, 2.6vw, 1.55rem);
+  line-height: 1.25;
 }
 
-.info-steps + p {
-  margin: 12px 0 0;
-}
-
-.info-features {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  column-gap: 32px;
-}
-
-.faq {
-  display: grid;
-  gap: 8px;
-}
-
-.faq details {
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--bg);
-}
-
-.faq summary {
-  cursor: pointer;
+.info h3 {
+  margin: 0;
+  font-size: 1rem;
   font-weight: 500;
 }
 
-.faq details p {
-  margin: 8px 0 0;
+.info-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--tint);
+  color: var(--accent-strong);
+}
+
+.info-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* How to export: one card per platform */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.step .info-icon {
+  margin-bottom: 4px;
+}
+
+.step p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.info-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-top: 16px;
+  padding: 14px 14px 14px 20px;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--accent-strong) 10%, var(--bg));
+}
+
+.info-cta p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.info-cta .file-button {
+  padding: 10px 20px;
+}
+
+/* Features: icon beside a short title and description */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-rows: auto 1fr; /* title row hugs the title, whatever the text length */
+  column-gap: 14px;
+  row-gap: 4px;
+}
+
+.feature .info-icon {
+  grid-row: span 2;
+}
+
+.feature h3 {
+  padding-top: 2px;
+}
+
+.feature p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* FAQ: divided accordion with a rotating chevron */
+.faq {
+  border-top: 1px solid var(--line);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 4px;
+  cursor: pointer;
+  font-weight: 500;
+  list-style: none;
+  transition: color 0.15s;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary:hover {
+  color: var(--accent-strong);
+}
+
+.chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: rotate 0.2s;
+}
+
+.faq-item[open] .chevron {
+  rotate: 180deg;
+}
+
+.faq-item p {
+  max-width: 70ch;
+  margin: 0;
+  padding: 0 4px 18px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Smooth open/close where the browser can animate to height: auto. */
+@supports (interpolate-size: allow-keywords) {
+  .faq-item {
+    interpolate-size: allow-keywords;
+  }
+
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size 0.25s ease, content-visibility 0.25s allow-discrete;
+  }
+
+  .faq-item[open]::details-content {
+    block-size: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .info-block {
+    padding: 20px;
+  }
+
+  .info-cta {
+    padding: 14px;
+  }
+
+  .info-cta .file-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .noscript {

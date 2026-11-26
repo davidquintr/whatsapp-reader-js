@@ -93,7 +93,7 @@
         "name": "¿Por qué no veo las fotos?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Si exportaste «Sin archivos», WhatsApp solo deja un aviso de multimedia omitido. Exporta «Incluyendo archivos» y abre el .zip completo."
+          "text": "Si exportaste «Sin archivos», WhatsApp solo deja un aviso de multimedia omitido. Exporta con «Incluir archivos» y abre el .zip completo."
         }
       },
       {
@@ -298,47 +298,98 @@
       </noscript>
 
       <article class="info">
-        <section>
-          <h2 data-i18n="howTitle">Cómo exportar un chat de WhatsApp</h2>
-          <ol class="info-steps">
-            <li data-i18n="howAndroid">Android: abre el chat, toca ⋮ › Más › Exportar chat y elige «Sin archivos» (.txt) o «Incluir archivos» (.zip con fotos y audios).</li>
-            <li data-i18n="howIphone">iPhone: abre el chat, toca el nombre del contacto o grupo › Exportar chat, y guarda el archivo en Archivos.</li>
-            <li data-i18n="howWeb">WhatsApp Web o Escritorio: abre el chat, toca ⋮ › Más › Exportar chat.</li>
-          </ol>
-          <p data-i18n="howOpen">Después abre el archivo aquí arriba con «Elige un archivo», o arrástralo a la página.</p>
+        <section class="info-block">
+          <header class="info-head">
+            <p class="info-eyebrow" data-i18n="howEyebrow">Antes de empezar</p>
+            <h2 data-i18n="howTitle">Cómo exportar un chat de WhatsApp</h2>
+          </header>
+          <ul class="steps">
+            <li class="step">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM11 18h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="howAndroidTitle">Android</h3>
+              <p data-i18n="howAndroid">Abre el chat, toca ⋮ › Más › Exportar chat y elige «Sin archivos» (.txt) o «Incluir archivos» (.zip con fotos y audios).</p>
+            </li>
+            <li class="step">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM11 18h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="howIphoneTitle">iPhone</h3>
+              <p data-i18n="howIphone">Abre el chat, toca el nombre del contacto o grupo › Exportar chat, y guarda el archivo en Archivos.</p>
+            </li>
+            <li class="step">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 20h8M12 16v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="howWebTitle">WhatsApp Web o Escritorio</h3>
+              <p data-i18n="howWeb">Abre el chat, haz clic en ⋮ › Más › Exportar chat y guarda el archivo.</p>
+            </li>
+          </ul>
+          <div class="info-cta">
+            <p data-i18n="howOpen">¿Ya tienes el archivo? Ábrelo aquí o arrástralo a la página.</p>
+            <label class="file-button" for="file-input">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M12 18v-6M9 15l3-3 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span data-i18n="howCta">Abrir mi chat</span>
+            </label>
+          </div>
         </section>
-        <section>
-          <h2 data-i18n="featuresTitle">Qué puedes hacer con WhatsApp Reader</h2>
-          <ul class="info-features">
-            <li data-i18n="feature1">Leer la conversación con burbujas, fechas y colores por participante, como en WhatsApp.</li>
-            <li data-i18n="feature2">Ver fotos, stickers, videos, audios y contactos si exportaste con archivos (.zip).</li>
-            <li data-i18n="feature3">Descubrir estadísticas: quién escribe más, a qué hora hablan, rachas y emojis favoritos.</li>
-            <li data-i18n="feature4">Buscar cualquier mensaje, filtrar por persona y saltar a una fecha.</li>
-            <li data-i18n="feature5">Comparar dos exportaciones para encontrar mensajes nuevos o eliminados.</li>
-            <li data-i18n="feature6">Guardar el chat como HTML o PDF, e instalar la app para usarla sin internet.</li>
+        <section class="info-block">
+          <header class="info-head">
+            <p class="info-eyebrow" data-i18n="featuresEyebrow">Funciones</p>
+            <h2 data-i18n="featuresTitle">Qué puedes hacer con WhatsApp Reader</h2>
+          </header>
+          <ul class="features">
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature1Title">Como en WhatsApp</h3>
+              <p data-i18n="feature1">Leer la conversación con burbujas, fechas y colores por participante, como en WhatsApp.</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 16l5-5 4 4 2-2 5 5M15.5 9.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature2Title">Fotos y stickers</h3>
+              <p data-i18n="feature2">Ver fotos, stickers, videos, audios y contactos si exportaste con archivos (.zip).</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature3Title">Estadísticas</h3>
+              <p data-i18n="feature3">Descubrir estadísticas: quién escribe más, a qué hora hablan, rachas y emojis favoritos.</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature4Title">Búsqueda</h3>
+              <p data-i18n="feature4">Buscar cualquier mensaje, filtrar por persona y saltar a una fecha.</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v13M4 14l3 3 3-3M17 20V7M14 10l3-3 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature5Title">Comparar exportaciones</h3>
+              <p data-i18n="feature5">Comparar dos exportaciones para encontrar mensajes nuevos o eliminados.</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature6Title">Guardar y sin internet</h3>
+              <p data-i18n="feature6">Guardar el chat como HTML o PDF, e instalar la app para usarla sin internet.</p>
+            </li>
           </ul>
         </section>
-        <section>
-          <h2 data-i18n="faqTitle">Preguntas frecuentes</h2>
+        <section class="info-block">
+          <header class="info-head">
+            <p class="info-eyebrow" data-i18n="faqEyebrow">Dudas</p>
+            <h2 data-i18n="faqTitle">Preguntas frecuentes</h2>
+          </header>
           <div class="faq">
-            <details>
-              <summary data-i18n="faq1q">¿Mis mensajes se suben a algún servidor?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq1q">¿Mis mensajes se suben a algún servidor?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq1a">No. El archivo se abre y se procesa solo en tu navegador. Nada se envía a ningún servidor, ni siquiera al nuestro.</p>
             </details>
-            <details>
-              <summary data-i18n="faq2q">¿Qué formatos acepta?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq2q">¿Qué formatos acepta?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq2a">Los .txt y .zip que exporta WhatsApp en Android, iPhone, WhatsApp Web y Escritorio, en español o inglés, incluidos los formatos de 2024 en adelante.</p>
             </details>
-            <details>
-              <summary data-i18n="faq3q">¿Funciona con chats de grupo?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq3q">¿Funciona con chats de grupo?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq3a">Sí. Cada participante tiene su color, y puedes elegir desde qué persona ver la conversación.</p>
             </details>
-            <details>
-              <summary data-i18n="faq4q">¿Por qué no veo las fotos?</summary>
-              <p data-i18n="faq4a">Si exportaste «Sin archivos», WhatsApp solo deja un aviso de multimedia omitido. Exporta «Incluyendo archivos» y abre el .zip completo.</p>
+            <details class="faq-item">
+              <summary><span data-i18n="faq4q">¿Por qué no veo las fotos?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
+              <p data-i18n="faq4a">Si exportaste «Sin archivos», WhatsApp solo deja un aviso de multimedia omitido. Exporta con «Incluir archivos» y abre el .zip completo.</p>
             </details>
-            <details>
-              <summary data-i18n="faq5q">¿Es gratis?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq5q">¿Es gratis?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq5a">Sí. Es un proyecto gratuito y de código abierto, publicado en GitHub.</p>
             </details>
           </div>

@@ -1,6 +1,6 @@
 // Service worker: offline app shell + Android "Share to WhatsApp Reader" target.
 // Bump VERSION whenever the shell files change so clients pick up the update.
-const VERSION = "v3.1.0";
+const VERSION = "v3.1.1";
 const SHELL_CACHE = `wa-reader-${VERSION}`;
 const RUNTIME_CACHE = "wa-reader-runtime";
 const SHARE_CACHE = "wa-share";

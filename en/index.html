@@ -299,47 +299,98 @@
       </noscript>
 
       <article class="info">
-        <section>
-          <h2 data-i18n="howTitle">How to export a WhatsApp chat</h2>
-          <ol class="info-steps">
-            <li data-i18n="howAndroid">Android: open the chat, tap ⋮ › More › Export chat and choose “Without media” (.txt) or “Include media” (.zip with photos and audio).</li>
-            <li data-i18n="howIphone">iPhone: open the chat, tap the contact or group name › Export Chat, and save the file to Files.</li>
-            <li data-i18n="howWeb">WhatsApp Web or Desktop: open the chat, click ⋮ › More › Export chat.</li>
-          </ol>
-          <p data-i18n="howOpen">Then open the file above with “Choose a file”, or drop it on the page.</p>
+        <section class="info-block">
+          <header class="info-head">
+            <p class="info-eyebrow" data-i18n="howEyebrow">Before you start</p>
+            <h2 data-i18n="howTitle">How to export a WhatsApp chat</h2>
+          </header>
+          <ul class="steps">
+            <li class="step">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM11 18h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="howAndroidTitle">Android</h3>
+              <p data-i18n="howAndroid">Open the chat, tap ⋮ › More › Export chat and choose “Without media” (.txt) or “Include media” (.zip with photos and audio).</p>
+            </li>
+            <li class="step">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM11 18h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="howIphoneTitle">iPhone</h3>
+              <p data-i18n="howIphone">Open the chat, tap the contact or group name › Export Chat, and save the file to Files.</p>
+            </li>
+            <li class="step">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 20h8M12 16v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="howWebTitle">WhatsApp Web or Desktop</h3>
+              <p data-i18n="howWeb">Open the chat, click ⋮ › More › Export chat and save the file.</p>
+            </li>
+          </ul>
+          <div class="info-cta">
+            <p data-i18n="howOpen">Got the file? Open it here or drop it on the page.</p>
+            <label class="file-button" for="file-input">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M12 18v-6M9 15l3-3 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span data-i18n="howCta">Open my chat</span>
+            </label>
+          </div>
         </section>
-        <section>
-          <h2 data-i18n="featuresTitle">What you can do with WhatsApp Reader</h2>
-          <ul class="info-features">
-            <li data-i18n="feature1">Read the conversation with bubbles, dates and a color per participant, just like WhatsApp.</li>
-            <li data-i18n="feature2">See photos, stickers, videos, voice notes and contacts if you exported with media (.zip).</li>
-            <li data-i18n="feature3">Explore statistics: who writes more, when you talk, streaks and favorite emojis.</li>
-            <li data-i18n="feature4">Search any message, filter by person and jump to a date.</li>
-            <li data-i18n="feature5">Compare two exports to find new or deleted messages.</li>
-            <li data-i18n="feature6">Save the chat as HTML or PDF, and install the app to use it offline.</li>
+        <section class="info-block">
+          <header class="info-head">
+            <p class="info-eyebrow" data-i18n="featuresEyebrow">Features</p>
+            <h2 data-i18n="featuresTitle">What you can do with WhatsApp Reader</h2>
+          </header>
+          <ul class="features">
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature1Title">Just like WhatsApp</h3>
+              <p data-i18n="feature1">Read the conversation with bubbles, dates and a color per participant, just like WhatsApp.</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 16l5-5 4 4 2-2 5 5M15.5 9.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature2Title">Photos and stickers</h3>
+              <p data-i18n="feature2">See photos, stickers, videos, voice notes and contacts if you exported with media (.zip).</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature3Title">Statistics</h3>
+              <p data-i18n="feature3">Explore statistics: who writes more, when you talk, streaks and favorite emojis.</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature4Title">Search</h3>
+              <p data-i18n="feature4">Search any message, filter by person and jump to a date.</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v13M4 14l3 3 3-3M17 20V7M14 10l3-3 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature5Title">Compare exports</h3>
+              <p data-i18n="feature5">Compare two exports to find new or deleted messages.</p>
+            </li>
+            <li class="feature">
+              <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <h3 data-i18n="feature6Title">Save and go offline</h3>
+              <p data-i18n="feature6">Save the chat as HTML or PDF, and install the app to use it offline.</p>
+            </li>
           </ul>
         </section>
-        <section>
-          <h2 data-i18n="faqTitle">Frequently asked questions</h2>
+        <section class="info-block">
+          <header class="info-head">
+            <p class="info-eyebrow" data-i18n="faqEyebrow">Questions</p>
+            <h2 data-i18n="faqTitle">Frequently asked questions</h2>
+          </header>
           <div class="faq">
-            <details>
-              <summary data-i18n="faq1q">Are my messages uploaded anywhere?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq1q">Are my messages uploaded anywhere?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq1a">No. The file is opened and processed only in your browser. Nothing is sent to any server, not even ours.</p>
             </details>
-            <details>
-              <summary data-i18n="faq2q">Which formats are supported?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq2q">Which formats are supported?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq2a">The .txt and .zip files WhatsApp exports on Android, iPhone, WhatsApp Web and Desktop, in English or Spanish, including the 2024+ formats.</p>
             </details>
-            <details>
-              <summary data-i18n="faq3q">Does it work with group chats?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq3q">Does it work with group chats?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq3a">Yes. Each participant gets a color, and you can choose whose side of the conversation to see.</p>
             </details>
-            <details>
-              <summary data-i18n="faq4q">Why can't I see the photos?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq4q">Why can't I see the photos?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq4a">If you exported “Without media”, WhatsApp only leaves a “media omitted” note. Export “Include media” and open the whole .zip.</p>
             </details>
-            <details>
-              <summary data-i18n="faq5q">Is it free?</summary>
+            <details class="faq-item">
+              <summary><span data-i18n="faq5q">Is it free?</span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
               <p data-i18n="faq5a">Yes. It is a free, open-source project published on GitHub.</p>
             </details>
           </div>

@@ -4,7 +4,7 @@
 //   index.html     Spanish, at the site root (also the template)
 //   en/index.html  English, generated
 //
-// Run `npm run build` after editing assets/js/i18n.js or index.html.
+// Run `npm run build:pages` after editing assets/js/i18n.js or index.html.
 // tests/pages.test.js fails if the committed pages are out of date.
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";

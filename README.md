@@ -41,11 +41,13 @@ It is a static site with no build step and no dependencies.
 
 ```sh
 npm start      # serves the site at http://localhost:8080 (ES modules need a server)
-npm run build  # bakes the strings from i18n.js into index.html and en/index.html, writes sitemap.xml
+npm run build:pages  # bakes the strings from i18n.js into index.html and en/index.html, writes sitemap.xml
 npm test       # all tests (Node 18+); fails if the pages are stale, so run the build first
 ```
 
-Each language has its own indexable URL: `/` (Spanish) and `/en/` (English). `index.html` is both the template and the Spanish page. Edit the text in `assets/js/i18n.js`, not in the HTML, then run `npm run build`.
+The generated pages are committed, so hosting needs no build step. The script is deliberately not called `build`: Vercel would run it and then look for a `public/` output folder.
+
+Each language has its own indexable URL: `/` (Spanish) and `/en/` (English). `index.html` is both the template and the Spanish page. Edit the text in `assets/js/i18n.js`, not in the HTML, then run `npm run build:pages`.
 
 | File | Role |
 | --- | --- |

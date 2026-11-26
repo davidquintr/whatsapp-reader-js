@@ -7,12 +7,12 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf
 const template = read("index.html");
 const built = buildPages(template);
 
-test("generated pages are up to date (run `npm run build`)", () => {
+test("generated pages are up to date (run `npm run build:pages`)", () => {
   for (const [path, html] of Object.entries(built)) {
-    assert.equal(read(path), html, `${path} is stale: run npm run build`);
+    assert.equal(read(path), html, `${path} is stale: run npm run build:pages`);
   }
-  assert.equal(read("sitemap.xml"), buildSitemap(), "sitemap.xml is stale: run npm run build");
-  assert.equal(read("robots.txt"), buildRobots(), "robots.txt is stale: run npm run build");
+  assert.equal(read("sitemap.xml"), buildSitemap(), "sitemap.xml is stale: run npm run build:pages");
+  assert.equal(read("robots.txt"), buildRobots(), "robots.txt is stale: run npm run build:pages");
 });
 
 for (const [lang, page] of Object.entries(PAGES)) {

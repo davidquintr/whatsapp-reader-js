@@ -1,0 +1,33 @@
+{
+  "name": "@davidquintr/whatsapp-chat-parser",
+  "version": "0.1.0",
+  "description": "Parse WhatsApp chat exports (.txt) from Android, iPhone and WhatsApp Web, in English and Spanish, including the 2024+ formats with narrow no-break spaces. Zero dependencies.",
+  "type": "module",
+  "exports": {
+    ".": "./parser.js",
+    "./stats": "./stats.js",
+    "./diff": "./diff.js"
+  },
+  "files": [
+    "parser.js",
+    "stats.js",
+    "diff.js"
+  ],
+  "scripts": {
+    "prepack": "cp ../../assets/js/parser.js ../../assets/js/stats.js ../../assets/js/diff.js ."
+  },
+  "keywords": [
+    "whatsapp",
+    "chat",
+    "parser",
+    "export"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidquintr/whatsapp-reader-js.git",
+    "directory": "packages/whatsapp-chat-parser"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

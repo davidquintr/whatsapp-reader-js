@@ -8,8 +8,17 @@
 Follow the [official WhatsApp guide](https://faq.whatsapp.com/196737011380816/?helpref=uf_share) and choose **Without media**. You get a `.txt` file.
 
 ## How to use
-Open the site, then choose the `.txt` file or drop it on the page. Tap a participant to see the conversation from their side.
+Open the site, then choose the `.txt` file (or the `.zip`, if you exported **with media**) or drop it on the page. Tap a participant to see the conversation from their side.
 The file is processed entirely in your browser and is never uploaded.
+
+### Features
+- **Media**: `.zip` exports show photos, stickers, videos, voice notes and contact cards inside the chat. Files load as you scroll.
+- **Statistics**: who writes more, messages per month, a weekday × hour heatmap, longest streak, who starts conversations, median reply time, top words and emojis.
+- **Search**: ignores accents and case, can filter by participant, and jumps to any date.
+- **WhatsApp formatting**: `*bold*`, `_italic_`, `~strike~`, `` `code` `` and clickable links. Polls, locations and contacts are shown as cards.
+- **Compare two exports** of the same chat to find new messages and messages that were deleted.
+- **Export** to a self-contained HTML file, or to PDF through the print dialog.
+- **Installable app (PWA)**: works offline. On Android, once installed, it appears in the share sheet, so you can send an export straight from WhatsApp.
 
 ### Supported formats
 The format is detected from the file itself, whatever the interface language is.
@@ -35,9 +44,15 @@ npm start   # serves the site at http://localhost:8080 (ES modules need a server
 npm test    # parser tests (Node 18+)
 ```
 
-- `assets/js/parser.js`: pure parser (no DOM), covered by `tests/parser.test.js`
-- `assets/js/app.js`: UI and rendering
-- `assets/js/i18n.js`: Spanish and English strings
+| File | Role |
+| --- | --- |
+| `assets/js/parser.js` | Pure parser (no DOM) |
+| `assets/js/stats.js`, `diff.js`, `format.js`, `zip.js`, `search.js` | Pure logic, each covered by a file in `tests/` |
+| `assets/js/app.js` | Wiring: loading, views, search, comparison |
+| `assets/js/render.js`, `statsview.js`, `exporter.js` | DOM rendering |
+| `assets/js/i18n.js` | Spanish and English strings |
+| `sw.js`, `manifest.webmanifest` | Offline cache and Android share target. Bump `VERSION` in `sw.js` when shell files change |
+| `packages/whatsapp-chat-parser` | npm package for the parser (`npm pack` copies the sources in) |
 
 <div align="center">
   <br>
@@ -46,6 +61,12 @@ npm test    # parser tests (Node 18+)
 </div>
 
 ## Changelog
+
+### v3.0.0
+- `.zip` exports with media, statistics, search and jump to date, WhatsApp formatting, and cards for polls, locations and contacts.
+- Compare two exports; export to HTML or PDF.
+- Installable PWA with offline support and an Android share target.
+- The parser is available as an npm package.
 
 ### v2.0.0
 - New parser that detects the format of modern exports (Web, iPhone, Android EN/ES), including the narrow spaces in `8:40 PM`.

@@ -30,7 +30,14 @@ const SYSTEM_HINTS = [
   "cambiaste el asunto", "cambiaste la descripción", "creaste el grupo",
 ];
 
-const MEDIA_RE = /^<[^<>]*\b(omitted|omitid[oa]s?)>$|^<(attached|adjunto|archivo adjunto):[^<>]*>$/i;
+const MEDIA_RE = /^<[^<>]*\b(omitted|omitid[oa]s?)>$/i;
+// iOS: "<attached: 00000003-PHOTO-2026-11-23.jpg>"; Android: "IMG-20261123-WA0003.jpg (file attached)".
+const ATTACHED_IOS_RE = /^<(?:attached|adjunto|archivo adjunto): ([^<>]+)>(?:\n([\s\S]*))?$/i;
+const ATTACHED_ANDROID_RE = /^([^\n]+?\.[a-z0-9]{2,5}) \((?:file attached|archivo adjunto)\)(?:\n([\s\S]*))?$/i;
+const LOCATION_RE = /^(?:location|ubicación|ubicacion): (https?:\/\/\S+)$/i;
+const MAPS_URL_RE = /^https?:\/\/(?:maps\.google\.com|www\.google\.com\/maps|maps\.app\.goo\.gl)\S*$/i;
+const POLL_RE = /^(?:POLL|ENCUESTA):\n([^\n]*)\n((?:(?:OPTION|OPCIÓN|OPCION): .*(?:\n|$))+)$/i;
+const POLL_OPTION_RE = /^(?:OPTION|OPCIÓN|OPCION): (.*?)(?: \((\d+) (?:votes?|votos?)\))?$/i;
 const DELETED_RE = /^(this message was deleted|you deleted this message|se eliminó este mensaje\.?|eliminaste este mensaje\.?)$/i;
 const EDITED_RE = /\s*<(this message was edited|se editó este mensaje\.?)>$/i;
 
@@ -43,6 +50,10 @@ const EDITED_RE = /\s*<(this message was edited|se editó este mensaje\.?)>$/i;
  * @property {boolean} edited
  * @property {boolean} media
  * @property {boolean} deleted
+ * @property {"text"|"media"|"deleted"|"attachment"|"contact"|"location"|"poll"} kind
+ * @property {string|null} attachment   file name inside a "with media" export
+ * @property {{url: string, lat: number|null, lng: number|null}|null} location
+ * @property {{question: string, options: {label: string, votes: number}[]}|null} poll
  */
 
 /**
@@ -50,7 +61,7 @@ const EDITED_RE = /\s*<(this message was edited|se editó este mensaje\.?)>$/i;
  * @returns {{entries: ChatEntry[], authors: string[], selfAuthor: string|null, dateOrder: "DMY"|"MDY"|"YMD"}}
  */
 export function parseChat(content) {
-  const lines = content.replace(/^﻿/, "").split(/\r?\n/);
+  const lines = content.replace(/^\uFEFF/, "").split(/\r?\n/);
   const raw = [];
 
   for (const line of lines) {
@@ -182,14 +193,66 @@ function makeEntry(type, date, author, text) {
     edited = true;
     body = body.replace(EDITED_RE, "");
   }
-  const trimmed = body.trim();
-  return {
+  const entry = {
     type,
     date,
     author,
     text: body,
     edited,
-    media: type === "message" && MEDIA_RE.test(trimmed),
-    deleted: type === "message" && DELETED_RE.test(trimmed),
+    media: false,
+    deleted: false,
+    kind: "text",
+    attachment: null,
+    location: null,
+    poll: null,
   };
+  if (type === "message") classify(entry);
+  return entry;
+}
+
+function classify(entry) {
+  const trimmed = entry.text.trim();
+
+  if (MEDIA_RE.test(trimmed)) {
+    entry.media = true;
+    entry.kind = "media";
+    return;
+  }
+  if (DELETED_RE.test(trimmed)) {
+    entry.deleted = true;
+    entry.kind = "deleted";
+    return;
+  }
+
+  const attached = ATTACHED_IOS_RE.exec(trimmed) || ATTACHED_ANDROID_RE.exec(trimmed);
+  if (attached) {
+    entry.attachment = attached[1].trim();
+    entry.text = (attached[2] || "").trim(); // caption, if any
+    entry.kind = /\.vcf$/i.test(entry.attachment) ? "contact" : "attachment";
+    return;
+  }
+
+  const location = LOCATION_RE.exec(trimmed);
+  const url = location ? location[1] : MAPS_URL_RE.test(trimmed) ? trimmed : null;
+  if (url) {
+    const coords = /[?&](?:q|query|ll)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/.exec(url);
+    entry.kind = "location";
+    entry.location = { url, lat: coords ? +coords[1] : null, lng: coords ? +coords[2] : null };
+    return;
+  }
+
+  const poll = POLL_RE.exec(trimmed);
+  if (poll) {
+    entry.kind = "poll";
+    entry.poll = {
+      question: poll[1].trim(),
+      options: poll[2]
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => {
+          const m = POLL_OPTION_RE.exec(line.trim());
+          return { label: m ? m[1] : line, votes: m && m[2] ? +m[2] : 0 };
+        }),
+    };
+  }
 }

@@ -111,7 +111,8 @@ test("older formats: 24h Android and iOS with seconds", () => {
 
   const ios = parseChat("[25/12/22, 18:30:00] Ana: feliz navidad\n‎[25/12/22, 18:31:00] Beto: ‎<attached: 00000001-PHOTO.jpg>");
   assert.equal(ios.entries[0].date.getDate(), 25);
-  assert.equal(ios.entries[1].media, true);
+  assert.equal(ios.entries[1].kind, "attachment");
+  assert.equal(ios.entries[1].attachment, "00000001-PHOTO.jpg");
 });
 
 test("old Android Spanish format without narrow spaces", () => {
@@ -156,4 +157,43 @@ test("deleted messages are flagged in both languages", () => {
     "11/23/26, 8:40 PM - Ana: This message was deleted\n23/11/26 20:41 - Beto: Se eliminó este mensaje.",
   );
   assert.ok(chat.entries.every((e) => e.deleted));
+});
+
+test("Android attachments with caption, and contact cards", () => {
+  const chat = parseChat(
+    "11/23/26, 8:40 PM - Ana: IMG-20261123-WA0003.jpg (file attached)\nmira esto\n" +
+      "23/11/26 20:41 - Beto: Juan Pérez.vcf (archivo adjunto)",
+  );
+  assert.equal(chat.entries[0].attachment, "IMG-20261123-WA0003.jpg");
+  assert.equal(chat.entries[0].text, "mira esto");
+  assert.equal(chat.entries[1].kind, "contact");
+  assert.equal(chat.entries[1].attachment, "Juan Pérez.vcf");
+});
+
+test("locations keep their coordinates", () => {
+  const chat = parseChat(
+    "11/23/26, 8:40 PM - Ana: location: https://maps.google.com/?q=12.1364,-86.2514\n" +
+      "11/23/26, 8:41 PM - Beto: https://maps.google.com/?q=-33.4489,-70.6693",
+  );
+  assert.deepEqual(chat.entries[0].location, { url: "https://maps.google.com/?q=12.1364,-86.2514", lat: 12.1364, lng: -86.2514 });
+  assert.equal(chat.entries[1].kind, "location");
+  assert.equal(chat.entries[1].location.lat, -33.4489);
+});
+
+test("polls in English and Spanish", () => {
+  const en = parseChat(
+    "11/23/26, 8:40 PM - Ana: POLL:\nWhere do we eat?\nOPTION: Pizza (2 votes)\nOPTION: Tacos (1 vote)\nOPTION: Sushi (0 votes)",
+  );
+  assert.equal(en.entries[0].kind, "poll");
+  assert.deepEqual(en.entries[0].poll, {
+    question: "Where do we eat?",
+    options: [
+      { label: "Pizza", votes: 2 },
+      { label: "Tacos", votes: 1 },
+      { label: "Sushi", votes: 0 },
+    ],
+  });
+  const es = parseChat("23/11/26 20:40 - Ana: ENCUESTA:\n¿Dónde comemos?\nOPCIÓN: Pizza (3 votos)\nOPCIÓN: Tacos (1 voto)");
+  assert.equal(es.entries[0].poll.options[0].votes, 3);
+  assert.equal(es.entries[0].poll.question, "¿Dónde comemos?");
 });

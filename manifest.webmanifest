@@ -1,0 +1,27 @@
+{
+  "name": "WhatsApp Reader",
+  "short_name": "WA Reader",
+  "description": "Read exported WhatsApp chats, styled like the app. Everything stays in your browser.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111b21",
+  "theme_color": "#202c33",
+  "icons": [
+    { "src": "assets/images/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/images/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "share_target": {
+    "action": "./share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "chat",
+          "accept": ["text/plain", ".txt", "application/zip", ".zip"]
+        }
+      ]
+    }
+  }
+}

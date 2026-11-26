@@ -1,5 +1,13 @@
 import { parseChat } from "./parser.js";
 import { LANGS, t } from "./i18n.js";
+import { renderEntries, hydrateAttachment } from "./render.js";
+import { readZip, findChatEntry, isZip } from "./zip.js";
+import { ChatSearch } from "./search.js";
+import { computeStats } from "./stats.js";
+import { renderStats, attachTooltip } from "./statsview.js";
+import { compareChats } from "./diff.js";
+import { exportHtml, printChat } from "./exporter.js";
+import { tokenize, renderTokens } from "./format.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -11,8 +19,27 @@ const els = {
   participants: $("participants"),
   userList: $("user-list"),
   chat: $("chat"),
+  chatView: $("chat-view"),
   reset: $("reset"),
   povStyle: $("pov-style"),
+  views: $("views"),
+  stats: $("stats"),
+  compare: $("compare"),
+  compareButton: $("compare-button"),
+  compareInput: $("compare-input"),
+  exportHtml: $("export-html"),
+  exportPdf: $("export-pdf"),
+  searchbar: $("searchbar"),
+  searchInput: $("search-input"),
+  searchAuthor: $("search-author"),
+  searchCount: $("search-count"),
+  searchPrev: $("search-prev"),
+  searchNext: $("search-next"),
+  jumpDate: $("jump-date"),
+  tooltip: $("tooltip"),
+  viewer: $("viewer"),
+  viewerImage: $("viewer-image"),
+  viewerCaption: $("viewer-caption"),
 };
 
 const state = {
@@ -20,9 +47,30 @@ const state = {
   chat: null, // result of parseChat
   fileName: "",
   selfIndex: 0,
+  view: "chat",
+  media: null, // Map<fileName, zipEntry> for "with media" exports
+  mediaUrls: new Map(), // fileName -> blob: URL
+  stats: null,
+  comparison: null, // { fileName, result }
+  registry: null,
   statusKey: null,
   statusVars: {},
 };
+
+const search = new ChatSearch();
+
+// Media are decompressed only when their message scrolls near the viewport.
+const mediaObserver = new IntersectionObserver(
+  (items) => {
+    for (const item of items) {
+      if (!item.isIntersecting) continue;
+      mediaObserver.unobserve(item.target);
+      const file = state.media?.get(item.target.dataset.file);
+      if (file) hydrateAttachment(item.target, file, state.mediaUrls, state.lang);
+    }
+  },
+  { rootMargin: "800px 0px" },
+);
 
 // ---------- Preferences ----------
 
@@ -54,6 +102,7 @@ function setTheme(theme) {
   document.querySelectorAll("[data-theme-value]").forEach((btn) => {
     btn.setAttribute("aria-pressed", String(btn.dataset.themeValue === theme));
   });
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "light" ? "#008069" : "#202c33");
 }
 
 function setLanguage(lang) {
@@ -71,42 +120,85 @@ function setLanguage(lang) {
     el.setAttribute("aria-label", label);
     el.title = label;
   });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    el.placeholder = t(lang, el.dataset.i18nPlaceholder);
+  });
   render();
 }
 
 // ---------- File loading ----------
 
-function loadFile(file) {
-  if (!file) return;
-  if (!/\.txt$/i.test(file.name) && file.type !== "text/plain") {
-    setStatus("invalidType", {}, true);
-    return;
+/** Reads a .txt or a WhatsApp .zip export. Returns { chat, media } or throws a status key. */
+async function readExport(file) {
+  if (isZip(file)) {
+    let entries;
+    try {
+      entries = await readZip(file);
+    } catch (error) {
+      throw { key: "zipError", vars: { error: error.message } };
+    }
+    const chatEntry = findChatEntry(entries);
+    if (!chatEntry) throw { key: "zipNoChat" };
+    const chat = parseChat(await chatEntry.text());
+    const media = new Map(entries.filter((e) => e !== chatEntry).map((e) => [e.baseName, e]));
+    return { chat, media };
   }
+  if (!/\.txt$/i.test(file.name) && !file.type.startsWith("text/")) throw { key: "invalidType" };
+  return { chat: parseChat(await file.text()), media: null };
+}
+
+async function loadFile(file) {
+  if (!file) return;
   setStatus("loading", { file: file.name });
-  file
-    .text()
-    .then((content) => {
-      const chat = parseChat(content);
-      if (!chat.authors.length) {
-        setStatus("noMessages", {}, true);
-        return;
-      }
-      state.chat = chat;
-      state.fileName = file.name;
-      const self = chat.selfAuthor ? chat.authors.indexOf(chat.selfAuthor) : 0;
-      state.selfIndex = Math.max(self, 0);
-      setStatus(null);
-      render();
-      els.summary.scrollIntoView({ behavior: "smooth", block: "start" });
-    })
-    .catch(() => setStatus("readError", {}, true));
+  try {
+    const { chat, media } = await readExport(file);
+    if (!chat.authors.length) throw { key: "noMessages" };
+    releaseMedia();
+    state.chat = chat;
+    state.media = media;
+    state.fileName = file.name;
+    state.stats = null;
+    state.comparison = null;
+    const self = chat.selfAuthor ? chat.authors.indexOf(chat.selfAuthor) : 0;
+    state.selfIndex = Math.max(self, 0);
+    state.view = "chat";
+    els.searchInput.value = "";
+    setStatus(null);
+    render();
+    els.summary.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    setStatus(error?.key || "readError", error?.vars || {}, true);
+  }
+}
+
+async function loadComparison(file) {
+  if (!file || !state.chat) return;
+  setStatus("loading", { file: file.name });
+  try {
+    const { chat } = await readExport(file);
+    if (!chat.authors.length) throw { key: "noMessages" };
+    state.comparison = { fileName: file.name, result: compareChats(state.chat, chat) };
+    setStatus(null);
+    renderComparison();
+    els.compare.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    setStatus(error?.key || "readError", error?.vars || {}, true);
+  } finally {
+    els.compareInput.value = "";
+  }
+}
+
+function releaseMedia() {
+  for (const url of state.mediaUrls.values()) URL.revokeObjectURL(url);
+  state.mediaUrls.clear();
+  mediaObserver.disconnect();
 }
 
 function resetToPreview() {
-  state.chat = null;
-  state.fileName = "";
-  state.selfIndex = 0;
+  releaseMedia();
+  Object.assign(state, { chat: null, fileName: "", selfIndex: 0, media: null, stats: null, comparison: null, view: "chat" });
   els.fileInput.value = "";
+  els.searchInput.value = "";
   setStatus(null);
   render();
 }
@@ -129,13 +221,14 @@ function sampleChat() {
   const at = (h, m) => new Date(2022, 8, 10, h, m);
   const you = L === "es" ? "Tú" : "You";
   const user = t(L, "sampleUser");
+  const base = { edited: false, media: false, deleted: false, attachment: null, location: null, poll: null, kind: "text" };
   return {
     authors: [user, you],
     selfAuthor: you,
     entries: [
-      { type: "system", date: at(21, 58), author: "", text: t(L, "sampleNotice") },
-      { type: "message", date: at(22, 0), author: user, text: t(L, "sampleBody") },
-      { type: "message", date: at(22, 1), author: you, text: t(L, "sampleReply"), edited: true },
+      { ...base, type: "system", date: at(21, 58), author: "", text: t(L, "sampleNotice") },
+      { ...base, type: "message", date: at(22, 0), author: user, text: t(L, "sampleBody") },
+      { ...base, type: "message", date: at(22, 1), author: you, text: t(L, "sampleReply"), edited: true },
     ],
   };
 }
@@ -148,17 +241,48 @@ function render() {
 
   els.reset.hidden = !loaded;
   els.participants.hidden = !loaded;
+  els.views.hidden = !loaded;
+  els.searchbar.hidden = !loaded;
   els.dropzone.classList.toggle("is-compact", loaded);
 
   const nf = new Intl.NumberFormat(state.lang);
   const count = chat.entries.filter((e) => e.type === "message").length;
-  els.summary.textContent = loaded
-    ? t(state.lang, "loaded", { file: state.fileName, n: nf.format(count) })
-    : t(state.lang, "preview");
+  els.summary.textContent = !loaded
+    ? t(state.lang, "preview")
+    : state.media
+      ? t(state.lang, "loadedMedia", { file: state.fileName, n: nf.format(count), m: nf.format(state.media.size) })
+      : t(state.lang, "loaded", { file: state.fileName, n: nf.format(count) });
 
   renderParticipants(chat.authors, selfIndex);
   renderAuthorStyles(chat.authors, selfIndex);
-  renderEntries(chat);
+
+  mediaObserver.disconnect();
+  state.registry = renderEntries(els.chat, chat, {
+    lang: state.lang,
+    media: state.media,
+    observer: mediaObserver,
+  });
+  search.setRegistry(state.registry);
+
+  if (loaded) {
+    renderSearchControls(chat);
+    runSearch();
+  }
+  renderComparison();
+  showView(loaded ? state.view : "chat");
+}
+
+function showView(view) {
+  state.view = view;
+  document.querySelectorAll("[data-view]").forEach((tab) => {
+    tab.setAttribute("aria-selected", String(tab.dataset.view === view));
+  });
+  els.chatView.hidden = view !== "chat";
+  els.stats.hidden = view !== "stats";
+  if (view === "stats" && state.chat) {
+    state.stats ??= computeStats(state.chat);
+    renderStats(els.stats, state.stats, state.lang);
+  }
 }
 
 function hueFor(name) {
@@ -201,107 +325,181 @@ function renderParticipants(authors, selfIndex) {
   els.userList.replaceChildren(frag);
 }
 
-function dayKey(date) {
-  return date ? `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}` : "none";
+// ---------- Search & jump to date ----------
+
+function renderSearchControls(chat) {
+  const selected = els.searchAuthor.value;
+  const all = new Option(t(state.lang, "everyone"), "");
+  els.searchAuthor.replaceChildren(all, ...chat.authors.map((a, i) => new Option(a, String(i))));
+  els.searchAuthor.value = selected && Number(selected) < chat.authors.length ? selected : "";
+
+  const dated = chat.entries.filter((e) => e.date);
+  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  if (dated.length) {
+    els.jumpDate.min = iso(dated[0].date);
+    els.jumpDate.max = iso(dated.at(-1).date);
+  }
 }
 
-function renderEntries(chat) {
-  const dayFmt = new Intl.DateTimeFormat(state.lang, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  const timeFmt = new Intl.DateTimeFormat(state.lang, { hour: "numeric", minute: "2-digit" });
-  const authorIndex = new Map(chat.authors.map((a, i) => [a, i]));
-  const editedLabel = t(state.lang, "edited");
+function runSearch() {
+  if (!state.chat) return;
+  const author = els.searchAuthor.value;
+  const authorName = author === "" ? null : state.chat.authors[Number(author)];
+  search.run(els.searchInput.value, (i) => !authorName || state.chat.entries[i].author === authorName);
+  updateSearchCount();
+}
 
-  const frag = document.createDocumentFragment();
-  let section = null;
-  let currentDay = null;
-  let prevAuthor = null;
+function updateSearchCount() {
+  const query = els.searchInput.value.trim();
+  const n = search.matches.length;
+  const nf = new Intl.NumberFormat(state.lang);
+  els.searchCount.textContent = !query
+    ? ""
+    : !n
+      ? t(state.lang, "noResults")
+      : t(state.lang, "resultOf", { i: search.current < 0 ? "–" : nf.format(search.current + 1), n: nf.format(n) });
+  els.searchPrev.disabled = els.searchNext.disabled = n === 0;
+}
 
-  for (const entry of chat.entries) {
-    const key = dayKey(entry.date);
-    if (!section || (entry.date && key !== currentDay)) {
-      section = document.createElement("section");
-      section.className = "day";
-      if (entry.date) {
-        const label = document.createElement("h3");
-        label.className = "day-label";
-        const span = document.createElement("span");
-        span.textContent = dayFmt.format(entry.date);
-        label.append(span);
-        section.append(label);
+let searchTimer;
+els.searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(runSearch, 200);
+});
+els.searchInput.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  clearTimeout(searchTimer);
+  if (!search.matches.length) runSearch();
+  search.go(e.shiftKey ? -1 : 1);
+  updateSearchCount();
+});
+els.searchAuthor.addEventListener("change", runSearch);
+els.searchPrev.addEventListener("click", () => {
+  search.go(-1);
+  updateSearchCount();
+});
+els.searchNext.addEventListener("click", () => {
+  search.go(1);
+  updateSearchCount();
+});
+
+els.jumpDate.addEventListener("change", () => {
+  if (!els.jumpDate.value || !state.registry) return;
+  const [y, m, d] = els.jumpDate.value.split("-").map(Number);
+  const target = new Date(y, m - 1, d);
+  const day = state.registry.days.find((x) => x.date >= target) ?? state.registry.days.at(-1);
+  day?.el.scrollIntoView({ block: "start", behavior: "smooth" });
+});
+
+// ---------- Comparison ----------
+
+function renderComparison() {
+  const cmp = state.comparison;
+  els.compare.hidden = !cmp || !state.chat;
+  if (!cmp || !state.chat) return els.compare.replaceChildren();
+
+  const L = state.lang;
+  const nf = new Intl.NumberFormat(L);
+  const dateFmt = new Intl.DateTimeFormat(L, { dateStyle: "medium", timeStyle: "short" });
+  const { onlyInA, onlyInB, common } = cmp.result;
+  const LIMIT = 200;
+
+  const head = document.createElement("div");
+  head.className = "compare-head";
+  const title = document.createElement("h2");
+  title.textContent = t(L, "compareTitle", { file: cmp.fileName });
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "action";
+  close.textContent = t(L, "close");
+  close.addEventListener("click", () => {
+    state.comparison = null;
+    renderComparison();
+  });
+  head.append(title, close);
+
+  const summary = document.createElement("p");
+  summary.className = "hint";
+  summary.textContent = t(L, "compareSummary", { common: nf.format(common) });
+
+  const group = (label, items, linkable) => {
+    const details = document.createElement("details");
+    details.className = "compare-group";
+    details.open = items.length > 0 && items.length <= 20;
+    const summaryEl = document.createElement("summary");
+    summaryEl.textContent = label;
+    details.append(summaryEl);
+    const list = document.createElement("ul");
+    if (!items.length) {
+      const li = document.createElement("li");
+      li.className = "hint";
+      li.textContent = t(L, "compareNone");
+      list.append(li);
+    }
+    for (const e of items.slice(0, LIMIT)) {
+      const li = document.createElement("li");
+      const when = document.createElement("span");
+      when.className = "compare-when";
+      when.textContent = `${e.date ? dateFmt.format(e.date) : ""} · ${e.author}`;
+      const text = document.createElement("span");
+      text.className = "compare-text";
+      text.textContent = e.attachment ?? e.text;
+      li.append(when, text);
+      if (linkable) {
+        const index = state.chat.entries.indexOf(e);
+        const go = document.createElement("button");
+        go.type = "button";
+        go.className = "link-button";
+        go.textContent = t(L, "showInChat");
+        go.addEventListener("click", () => {
+          showView("chat");
+          search.focusRow(state.registry.rows[index]);
+        });
+        li.append(go);
       }
-      frag.append(section);
-      currentDay = key;
-      prevAuthor = null;
+      list.append(li);
     }
-
-    if (entry.type === "system") {
-      const row = document.createElement("div");
-      row.className = "row system";
-      const notice = document.createElement("p");
-      notice.className = "notice";
-      notice.textContent = entry.text.trim();
-      row.append(notice);
-      section.append(row);
-      prevAuthor = null;
-      continue;
+    if (items.length > LIMIT) {
+      const li = document.createElement("li");
+      li.className = "hint";
+      li.textContent = t(L, "compareMore", { n: nf.format(items.length - LIMIT) });
+      list.append(li);
     }
+    details.append(list);
+    return details;
+  };
 
-    const row = document.createElement("div");
-    const a = authorIndex.get(entry.author);
-    row.className = "row";
-    row.dataset.a = a;
-    if (prevAuthor !== entry.author) row.classList.add("first");
-
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-    if (entry.media || entry.deleted) bubble.classList.add("muted");
-
-    if (prevAuthor !== entry.author) {
-      const author = document.createElement("p");
-      author.className = "author";
-      author.textContent = entry.author;
-      bubble.append(author);
-    }
-
-    const text = document.createElement("p");
-    text.className = "text";
-    appendLinkified(text, entry.text);
-    bubble.append(text);
-
-    const meta = document.createElement("span");
-    meta.className = "meta";
-    meta.textContent = (entry.edited ? editedLabel + " · " : "") + (entry.date ? timeFmt.format(entry.date) : "");
-    bubble.append(meta);
-
-    row.append(bubble);
-    section.append(row);
-    prevAuthor = entry.author;
-  }
-
-  els.chat.replaceChildren(frag);
-}
-
-const URL_RE = /\bhttps?:\/\/[^\s<>"']+[^\s<>"'.,;:!?)\]]/gi;
-
-function appendLinkified(parent, text) {
-  let last = 0;
-  for (const match of text.matchAll(URL_RE)) {
-    if (match.index > last) parent.append(text.slice(last, match.index));
-    const a = document.createElement("a");
-    a.href = match[0];
-    a.textContent = match[0];
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    parent.append(a);
-    last = match.index + match[0].length;
-  }
-  if (last < text.length) parent.append(text.slice(last));
+  els.compare.replaceChildren(
+    head,
+    summary,
+    group(t(L, "onlyInA", { n: nf.format(onlyInA.length) }), onlyInA, true),
+    group(t(L, "onlyInB", { file: cmp.fileName, n: nf.format(onlyInB.length) }), onlyInB, false),
+  );
 }
 
 // ---------- Events ----------
 
 els.fileInput.addEventListener("change", (e) => loadFile(e.target.files[0]));
 els.reset.addEventListener("click", resetToPreview);
+els.compareButton.addEventListener("click", () => els.compareInput.click());
+els.compareInput.addEventListener("change", (e) => loadComparison(e.target.files[0]));
+
+els.exportHtml.addEventListener("click", () => {
+  if (!state.chat) return;
+  exportHtml({
+    chat: els.chat,
+    extraCss: els.povStyle.textContent,
+    theme: document.documentElement.dataset.theme,
+    lang: state.lang,
+    title: state.fileName.replace(/\.(txt|zip)$/i, ""),
+    footer: t(state.lang, "exportedOn"),
+    fileName: state.fileName.replace(/\.(txt|zip)$/i, "") + ".html",
+  });
+});
+els.exportPdf.addEventListener("click", printChat);
+
+document.querySelectorAll("[data-view]").forEach((tab) => tab.addEventListener("click", () => showView(tab.dataset.view)));
 
 els.userList.addEventListener("click", (e) => {
   const btn = e.target.closest(".user-chip");
@@ -317,6 +515,32 @@ document.querySelectorAll("[data-theme-value]").forEach((btn) =>
 document.querySelectorAll("[data-lang-value]").forEach((btn) =>
   btn.addEventListener("click", () => setLanguage(btn.dataset.langValue)),
 );
+
+attachTooltip(els.stats, els.tooltip);
+
+// Tapping a photo opens it full screen, like WhatsApp.
+els.chat.addEventListener("click", (e) => {
+  const img = e.target.closest("img[data-viewer]");
+  if (!img) return;
+  const row = img.closest(".row");
+  const entry = row ? state.chat?.entries[Number(row.dataset.i)] : null;
+  els.viewerImage.src = img.src;
+  els.viewerImage.alt = img.alt;
+  els.viewerCaption.replaceChildren();
+  if (entry) {
+    const author = document.createElement("strong");
+    author.textContent = entry.author;
+    els.viewerCaption.append(author);
+    if (entry.text.trim()) {
+      els.viewerCaption.append(": ");
+      renderTokens(els.viewerCaption, tokenize(entry.text.trim()));
+    }
+  }
+  els.viewer.showModal();
+});
+// Close on any click (backdrop, image or button); Esc is handled by <dialog>.
+els.viewer.addEventListener("click", () => els.viewer.close());
+els.viewer.addEventListener("close", () => els.viewerImage.removeAttribute("src"));
 
 // Drag & drop anywhere on the page.
 let dragDepth = 0;
@@ -337,7 +561,31 @@ window.addEventListener("drop", (e) => {
   loadFile(e.dataTransfer?.files[0]);
 });
 
+// ---------- PWA: offline cache and Android share target ----------
+
+async function loadSharedFile() {
+  const params = new URLSearchParams(location.search);
+  if (!params.has("shared")) return;
+  history.replaceState(null, "", location.pathname);
+  try {
+    const cache = await caches.open("wa-share");
+    const response = await cache.match("shared-file");
+    if (!response) return;
+    const name = decodeURIComponent(response.headers.get("X-File-Name") || "chat.txt");
+    const blob = await response.blob();
+    await cache.delete("shared-file");
+    loadFile(new File([blob], name, { type: blob.type }));
+  } catch {
+    setStatus("readError", {}, true);
+  }
+}
+
+if ("serviceWorker" in navigator && window.isSecureContext) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
 // ---------- Init ----------
 
 setTheme(document.documentElement.dataset.theme || "dark");
 setLanguage(state.lang);
+loadSharedFile();

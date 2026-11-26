@@ -9,6 +9,9 @@
     />
     <title>WhatsApp Reader</title>
     <link rel="icon" href="assets/images/iconreader.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/images/icon-192.png" />
+    <meta name="theme-color" content="#202c33" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -128,7 +131,12 @@
           </svg>
           <span data-i18n="chooseFile">Elige un archivo</span>
         </label>
-        <input type="file" id="file-input" accept=".txt,text/plain" hidden />
+        <input
+          type="file"
+          id="file-input"
+          accept=".txt,.zip,text/plain,application/zip"
+          hidden
+        />
         <p class="hint" data-i18n="dropHint"></p>
         <p id="status" class="status" role="status" aria-live="polite"></p>
       </section>
@@ -139,9 +147,72 @@
         <ul id="user-list" class="users"></ul>
       </section>
 
+      <nav id="views" class="views" hidden>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" data-view="chat" aria-selected="true" data-i18n="tabChat">
+            Chat
+          </button>
+          <button type="button" role="tab" data-view="stats" aria-selected="false" data-i18n="tabStats">
+            Estadísticas
+          </button>
+        </div>
+        <div class="actions">
+          <button type="button" id="compare-button" class="action" data-i18n="compare">Comparar</button>
+          <button type="button" id="export-html" class="action" data-i18n="exportHtml">Exportar HTML</button>
+          <button type="button" id="export-pdf" class="action" data-i18n="exportPdf">PDF</button>
+        </div>
+        <input
+          type="file"
+          id="compare-input"
+          accept=".txt,.zip,text/plain,application/zip"
+          hidden
+        />
+      </nav>
+
       <p id="summary" class="summary"></p>
-      <div id="chat" class="chat"></div>
+
+      <section id="compare" class="compare" hidden></section>
+
+      <div id="chat-view">
+        <div id="searchbar" class="searchbar" role="search" hidden>
+          <input
+            type="search"
+            id="search-input"
+            class="search-input"
+            data-i18n-placeholder="searchPlaceholder"
+            autocomplete="off"
+          />
+          <select id="search-author" class="search-author" data-i18n-label="searchAuthor"></select>
+          <span id="search-count" class="search-count" aria-live="polite"></span>
+          <button type="button" id="search-prev" class="search-nav" data-i18n-label="previous">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            </svg>
+          </button>
+          <button type="button" id="search-next" class="search-nav" data-i18n-label="next">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            </svg>
+          </button>
+          <input type="date" id="jump-date" class="jump-date" data-i18n-label="jumpToDate" />
+        </div>
+        <div id="chat" class="chat"></div>
+      </div>
+
+      <section id="stats" class="stats" hidden></section>
     </main>
+
+    <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+    <dialog id="viewer" class="viewer" data-i18n-label="imageViewer">
+      <button type="button" class="viewer-close" data-i18n-label="close">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+        </svg>
+      </button>
+      <img id="viewer-image" alt="" />
+      <p id="viewer-caption" class="viewer-caption"></p>
+    </dialog>
 
     <footer class="footer">
       <div class="footer-grid">
@@ -153,7 +224,7 @@
             rel="noopener noreferrer"
           >
             <img
-              src="http://github.com/davidquintr.png"
+              src="https://github.com/davidquintr.png"
               alt="DavidQuint"
               width="64"
               height="64"

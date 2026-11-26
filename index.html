@@ -1,110 +1,186 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <link rel="icon" href="assets/images/iconreader.png">
-        <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/product.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/buttons.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/chats.css" id="chatstyle">
-        <link rel="stylesheet" type="text/css" href="" id="alter">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
-        <title>WhatsApp Reader</title>
-    </head>
-
-    <header>
-        <div id="headercont">
-            <div>
-                <img src="assets/images/iconreader.png" alt="wareader icon" id="logoapp">
-                <span id="wareader">WhatsApp Reader</span>
-            </div>
-            
-            <div id="reload">
-                <div id="reloader" onclick="location.reload(false)"></div>
-            </div>
+<!doctype html>
+<html lang="es" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Lee tus chats exportados de WhatsApp con el formato de la app. Todo se procesa en tu navegador."
+    />
+    <title>WhatsApp Reader</title>
+    <link rel="icon" href="assets/images/iconreader.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Rubik:wght@500&display=swap"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script>
+      // Apply the theme before first paint to avoid a flash.
+      (function () {
+        var theme;
+        try {
+          theme = localStorage.getItem("wa-theme");
+        } catch (e) {}
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark";
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <style id="pov-style"></style>
+    <script type="module" src="assets/js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <img src="assets/images/iconreader.png" alt="" width="40" height="40" />
+        <span>WhatsApp Reader</span>
+      </div>
+      <div class="toolbar">
+        <div class="segmented" role="group" data-i18n-label="themeGroup">
+          <button
+            type="button"
+            data-theme-value="dark"
+            data-i18n-label="dark"
+            aria-pressed="true"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            data-theme-value="light"
+            data-i18n-label="light"
+            aria-pressed="false"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4.5" />
+              <path
+                d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
         </div>
+        <div class="segmented" role="group" data-i18n-label="langGroup">
+          <button
+            type="button"
+            data-lang-value="es"
+            lang="es"
+            aria-pressed="true"
+          >
+            ESP
+          </button>
+          <button
+            type="button"
+            data-lang-value="en"
+            lang="en"
+            aria-pressed="false"
+          >
+            ENG
+          </button>
+        </div>
+        <button
+          type="button"
+          id="reset"
+          class="icon-button"
+          data-i18n-label="newFile"
+          hidden
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
     </header>
 
-    <body>
-        <div id="init">
-            <div id="fmem">
-                <div id="contMode">
-                    <button id="night" onclick="switchNi()"></button>
-                    <button id="day" onclick="switchDay()"></button>
-                </div>
-            </div>
-            <div id="lmem">
-                <div id="langMode">
-                    <button id="esp" onclick="switchEsp()">ESP</button>
-                    <button id="eng" onclick="switchEng()">ENG</button>
-                </div>
-            </div>
+    <main>
+      <section class="hero">
+        <h1 data-i18n="title">Interpreta tus mensajes exportados</h1>
+        <p data-i18n="description"></p>
+      </section>
+
+      <section class="loader" id="dropzone">
+        <label class="file-button" for="file-input">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M12 18v-6M9 15l3-3 3 3"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span data-i18n="chooseFile">Elige un archivo</span>
+        </label>
+        <input type="file" id="file-input" accept=".txt,text/plain" hidden />
+        <p class="hint" data-i18n="dropHint"></p>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="participants" class="participants" hidden>
+        <h2 data-i18n="participants">Participantes</h2>
+        <p class="hint" data-i18n="povHint"></p>
+        <ul id="user-list" class="users"></ul>
+      </section>
+
+      <p id="summary" class="summary"></p>
+      <div id="chat" class="chat"></div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-item">
+          <span data-i18n="developer">Desarrollador</span>
+          <a
+            href="https://github.com/davidquintr"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="http://github.com/davidquintr.png"
+              alt="DavidQuint"
+              width="64"
+              height="64"
+            />
+          </a>
         </div>
-
-        <h1 id="titulo">Interpreta tus mensajes exportados</h1>
-        <p id="desc">Cuando exportas tu chat de WA, se torna caótico leer las conversaciones<br>WA Reader les otorga formato a las conversaciones y las muestra como si fuese el original.<br></p>
-        <h2 id="subtitulo">Selecciona el archivo para otorgar el formato</h3>
-
-        <div id="entrada">
-            <label for="archivo" id="labArch">Elige un archivo</label>
-            <input type="file" id="archivo">
-            <div id="configs">
-                <h3 id="txtusr">Usuario activo</h3>
-                <select name="prueba" id="optionpov">
-                </select>
-            </div>
+        <p class="footer-note" data-i18n="disclaimer"></p>
+        <div class="footer-item">
+          <span data-i18n="sourceCode">Código fuente</span>
+          <a
+            href="https://github.com/davidquintr/whatsapp-reader-js"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="github-link"
+            aria-label="GitHub"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"
+              />
+            </svg>
+          </a>
         </div>
-
-        <p id="parraf">Vista previa</p>
-        <p id="userParraf">Usuarios en la conversación:</p>
-
-        <div id="contUsers">
-        </div>
-
-        <div id = "area">
-            <div id="containall">
-                <p id="dia">10 de septiembre del 2022</p>
-            </div>
-
-            <div id="containmsg" class="oth">
-                <div id="msg">
-                    <div id="elements">
-                        <p id="us">Usuario</p>
-                        <p id="cuerpo">Así será el cuerpo del texto</p>
-                    </div>
-                    <p id="fecha">10:00 p.m</p>
-                </div>
-            </div>
-        </div>
-        <footer>
-            <div id="footarea">
-                <div id="developer">
-                    <span id="txtDev">Desarrollador</span>
-                    <div>
-                        <a href="https://github.com/deibikint" target="_blank"><img src="assets/images/davidquint.png" alt="davidquint"></a>
-                    </div>
-                </div>
-
-                <div id="centralText">
-                    <span id="txtDisc" >Esta página web funciona solo para experimento<br></span>
-                </div>
-
-                <div id="info">
-                    <span id="txtCod">Código fuente</span>
-                    <div>
-                        <a href="https://github.com/deibikint/whatsapp-reader.github.io" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" id="gitlogo"></a>
-                    </div>
-                </div>
-            </div>
-            <div id="final">
-                <span id="txtFinal">Desarrollado para GitHub - 2022</span>
-            </div>
-        </footer>
-        <script src="assets/js/program.js"></script>
-        <script src="assets/js/lang.js"></script>
-        <script src="assets/js/visual.js"></script>
-    </body>
+        <p class="credits" data-i18n="credits">
+          Desarrollado por DavidQuint ©2022 - 2026
+        </p>
+      </div>
+    </footer>
+  </body>
 </html>

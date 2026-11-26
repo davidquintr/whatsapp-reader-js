@@ -1,36 +1,64 @@
 <div align="center">
-  <img src="assets/images/iconreader.png" alt = "wareader" width ="128px">
-  <p>Now with POV messages</p>
+  <img src="assets/images/iconreader.png" alt="WhatsApp Reader" width="128">
   <h1>WhatsApp Reader</h1>
-  <p>Interpreat the exported chat from WhatsApp to something readable.</p><br>
+  <p>Turn an exported WhatsApp chat into something readable, styled like the app.</p>
 </div>
-  
-# How to export a chat?
-You can read the [FAQ in the WA page for export a chat](https://faq.whatsapp.com/196737011380816/?helpref=uf_share).
 
-# How to use WA Reader
-Only need the `.txt` of the chat and upload in the entry of the site. after that, you can see all the chat like WhatsApp style.
+## How to export a chat
+Follow the [official WhatsApp guide](https://faq.whatsapp.com/196737011380816/?helpref=uf_share) and choose **Without media**. You get a `.txt` file.
 
-# Issues 
-- Laggy when you treat to show at least 40k of messages.
+## How to use
+Open the site, then choose the `.txt` file or drop it on the page. Tap a participant to see the conversation from their side.
+The file is processed entirely in your browser and is never uploaded.
 
-# Preview
-You can see [WhatsApp Reader](https://davidquintr.github.io/whatsapp-reader.github.io/) just here.
+### Supported formats
+The format is detected from the file itself, whatever the interface language is.
+
+| Source | Example header |
+| --- | --- |
+| WhatsApp Web / Desktop | `[11/23/26, 8:40:30 PM] You: …` |
+| iPhone | `[23/11/26, 20:40:30] Name: …` |
+| Android (English) | `11/23/26, 8:40 PM - Name: …` |
+| Android (Spanish) | `23/11/26 8:40 p. m. - Name: …` |
+| Older Android, 24h | `23/11/2026, 20:40 - Name: …` |
+
+It handles multi-line messages, system notices, media placeholders, and edited and deleted messages.
+
+## Preview
+Live at [davidquintr.github.io/whatsapp-reader-js](https://davidquintr.github.io/whatsapp-reader-js/).
+
+## Development
+It is a static site with no build step and no dependencies.
+
+```sh
+npm start   # serves the site at http://localhost:8080 (ES modules need a server)
+npm test    # parser tests (Node 18+)
+```
+
+- `assets/js/parser.js`: pure parser (no DOM), covered by `tests/parser.test.js`
+- `assets/js/app.js`: UI and rendering
+- `assets/js/i18n.js`: Spanish and English strings
 
 <div align="center">
-    <br>
-    <img src="assets/images/davidquint.png" width="96">
-    <p>Made by DavidQuint</p>
+  <br>
+  <img src="assets/images/davidquint.png" width="96" alt="DavidQuint">
+  <p>Made by DavidQuint</p>
 </div>
 
-# _Changelogs_
+## Changelog
 
-## **First release v1.0.0**
+### v2.0.0
+- New parser that detects the format of modern exports (Web, iPhone, Android EN/ES), including the narrow spaces in `8:40 PM`.
+- Day-first or month-first dates are detected from the file, not from the UI language.
+- Fixed: HTML in messages could run as code (XSS). Messages are now rendered as plain text.
+- Fixed: false and duplicated system notices, wrong "active user" matches, and the "Octuber" typo.
+- Much faster on large chats: no per-line logging, a single DOM insert, and off-screen days are skipped.
+- Responsive layout with a mobile viewport, light/dark theme and language saved between visits, drag and drop.
+- Edited, media and deleted messages are styled. Links can be clicked.
 
-_Includes all the improvements for the basic messages._
-
+### v1.0.0
 - Multiline messages
 - POV messages
-- Different colors for all users in the conversation
-- Showing all the warnings
-- Datetime showing in the top of view.
+- Different colors for each user in the conversation
+- System notices
+- Date shown at the top of the view
